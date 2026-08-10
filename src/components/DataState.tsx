@@ -13,8 +13,8 @@ export function EmptyState({
   action,
 }: {
   title: string;
-  description?: string;
-  icon?: LucideIcon;
+  description?: string | undefined;
+  icon?: LucideIcon | undefined;
   action?: React.ReactNode;
 }) {
   return (
@@ -31,7 +31,7 @@ export function EmptyState({
   );
 }
 
-export function LoadingRows({ rows = 5 }: { rows?: number }) {
+export function LoadingRows({ rows = 5 }: { rows?: number | undefined }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
@@ -41,7 +41,7 @@ export function LoadingRows({ rows = 5 }: { rows?: number }) {
   );
 }
 
-export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
+export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: (() => void) | undefined }) {
   return (
     <Alert variant="destructive">
       <AlertTriangle className="size-4" />
@@ -70,11 +70,11 @@ export function DataState({
 }: {
   isLoading: boolean;
   error: unknown;
-  isEmpty?: boolean;
+  isEmpty?: boolean | undefined;
   empty?: React.ReactNode;
-  onRetry?: () => void;
+  onRetry?: (() => void) | undefined;
   children: React.ReactNode;
-  rows?: number;
+  rows?: number | undefined;
 }) {
   if (isLoading) return <LoadingRows rows={rows} />;
   if (error) return <ErrorState error={error} onRetry={onRetry} />;
