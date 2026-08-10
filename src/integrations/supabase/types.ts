@@ -539,6 +539,15 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      notify_staff: {
+        Args: {
+          _message: string
+          _request: string
+          _title: string
+          _type: Database["public"]["Enums"]["notification_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "department_user" | "logistics_officer" | "admin"
