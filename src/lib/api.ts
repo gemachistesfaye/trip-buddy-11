@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type {
+  AppRole,
+  AssignmentStatus,
   Assignment,
   AppNotification,
   Department,
@@ -90,13 +92,13 @@ export async function fetchRequestDays(requestId: string): Promise<RequestDay[]>
 }
 
 export async function fetchAssignments(): Promise<Assignment[]> {
-  return unwrap(
+  return unwrap<Assignment[]>(
     await supabase
       .from("transport_assignments")
       .select(
         "*, vehicles(id,plate_number,vehicle_type,model,passenger_capacity), drivers(id,full_name,phone), transport_requests(id,request_number,destination,request_type,status,number_of_passengers,departments(id,name,code))",
       )
-      .order("departure_datetime", { ascending: true }),
+      .order("departure_datetime", { ascending: true }) as unknown as { data: Assignment[] | null; error: { message: string } | null },
   );
 }
 
@@ -267,7 +269,7 @@ export async function createAssignment(input: {
   ]);
 }
 
-export async function updateAssignmentStatus(id: string, status: string) {
+export async function updateAssignmentStatus(id: string, status: AssignmentStatus) {
   const { error } = await supabase.from("transport_assignments").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 }
@@ -319,12 +321,15 @@ export async function upsertDepartment(dept: Partial<Department> & { name: strin
   if (res.error) throw new Error(res.error.message);
 }
 
-export async function updateProfile(id: string, patch: Partial<Profile>) {
+export async function updateProfile(
+  id: string,
+  patch: Partial<Pick<Profile, "full_name" | "phone" | "department_id" | "is_active" | "email">>,
+) {
   const { error } = await supabase.from("profiles").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
 }
 
-export async function setUserRole(userId: string, role: string) {
+export async function setUserRole(userId: string, role: AppRole) {
   const del = await supabase.from("user_roles").delete().eq("user_id", userId);
   if (del.error) throw new Error(del.error.message);
   const ins = await supabase.from("user_roles").insert({ user_id: userId, role });
