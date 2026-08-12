@@ -10,33 +10,123 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDepartmentDashboardRouteImport } from './routes/_authenticated/department.dashboard'
+import { Route as AuthenticatedDepartmentNotificationsRouteImport } from './routes/_authenticated/department.notifications'
+import { Route as AuthenticatedDepartmentProfileRouteImport } from './routes/_authenticated/department.profile'
+import { Route as AuthenticatedLogisticsNotificationsRouteImport } from './routes/_authenticated/logistics.notifications'
+import { Route as AuthenticatedDepartmentRequestsIndexRouteImport } from './routes/_authenticated/department.requests.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDepartmentDashboardRoute =
+  AuthenticatedDepartmentDashboardRouteImport.update({
+    id: '/department/dashboard',
+    path: '/department/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentNotificationsRoute =
+  AuthenticatedDepartmentNotificationsRouteImport.update({
+    id: '/department/notifications',
+    path: '/department/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentProfileRoute =
+  AuthenticatedDepartmentProfileRouteImport.update({
+    id: '/department/profile',
+    path: '/department/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsNotificationsRoute =
+  AuthenticatedLogisticsNotificationsRouteImport.update({
+    id: '/logistics/notifications',
+    path: '/logistics/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentRequestsIndexRoute =
+  AuthenticatedDepartmentRequestsIndexRouteImport.update({
+    id: '/department/requests/',
+    path: '/department/requests/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
+  '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/department/requests/': typeof AuthenticatedDepartmentRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
+  '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/department/requests': typeof AuthenticatedDepartmentRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/_authenticated/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
+  '/_authenticated/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/_authenticated/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/_authenticated/department/requests/': typeof AuthenticatedDepartmentRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/department/dashboard'
+    | '/department/notifications'
+    | '/department/profile'
+    | '/logistics/notifications'
+    | '/department/requests/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/department/dashboard'
+    | '/department/notifications'
+    | '/department/profile'
+    | '/logistics/notifications'
+    | '/department/requests'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/department/dashboard'
+    | '/_authenticated/department/notifications'
+    | '/_authenticated/department/profile'
+    | '/_authenticated/logistics/notifications'
+    | '/_authenticated/department/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +138,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/department/dashboard': {
+      id: '/_authenticated/department/dashboard'
+      path: '/department/dashboard'
+      fullPath: '/department/dashboard'
+      preLoaderRoute: typeof AuthenticatedDepartmentDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/notifications': {
+      id: '/_authenticated/department/notifications'
+      path: '/department/notifications'
+      fullPath: '/department/notifications'
+      preLoaderRoute: typeof AuthenticatedDepartmentNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/profile': {
+      id: '/_authenticated/department/profile'
+      path: '/department/profile'
+      fullPath: '/department/profile'
+      preLoaderRoute: typeof AuthenticatedDepartmentProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/notifications': {
+      id: '/_authenticated/logistics/notifications'
+      path: '/logistics/notifications'
+      fullPath: '/logistics/notifications'
+      preLoaderRoute: typeof AuthenticatedLogisticsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/requests/': {
+      id: '/_authenticated/department/requests/'
+      path: '/department/requests'
+      fullPath: '/department/requests/'
+      preLoaderRoute: typeof AuthenticatedDepartmentRequestsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDepartmentDashboardRoute: typeof AuthenticatedDepartmentDashboardRoute
+  AuthenticatedDepartmentNotificationsRoute: typeof AuthenticatedDepartmentNotificationsRoute
+  AuthenticatedDepartmentProfileRoute: typeof AuthenticatedDepartmentProfileRoute
+  AuthenticatedLogisticsNotificationsRoute: typeof AuthenticatedLogisticsNotificationsRoute
+  AuthenticatedDepartmentRequestsIndexRoute: typeof AuthenticatedDepartmentRequestsIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDepartmentDashboardRoute: AuthenticatedDepartmentDashboardRoute,
+  AuthenticatedDepartmentNotificationsRoute:
+    AuthenticatedDepartmentNotificationsRoute,
+  AuthenticatedDepartmentProfileRoute: AuthenticatedDepartmentProfileRoute,
+  AuthenticatedLogisticsNotificationsRoute:
+    AuthenticatedLogisticsNotificationsRoute,
+  AuthenticatedDepartmentRequestsIndexRoute:
+    AuthenticatedDepartmentRequestsIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

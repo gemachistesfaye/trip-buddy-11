@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { fetchMyRequests, qk } from "@/lib/api";
 import { REQUEST_STATUSES, STATUS_LABELS } from "@/lib/domain";
 
-export const Route = createFileRoute("/_authenticated/department/requests")({
+export const Route = createFileRoute("/_authenticated/department/requests/")({
   head: () => ({
     meta: [
       { title: "My Transport Requests | Transport Management" },
