@@ -10,33 +10,330 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAdminDepartmentsRouteImport } from './routes/_authenticated/admin.departments'
+import { Route as AuthenticatedAdminDriversRouteImport } from './routes/_authenticated/admin.drivers'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminVehiclesRouteImport } from './routes/_authenticated/admin.vehicles'
+import { Route as AuthenticatedDepartmentDashboardRouteImport } from './routes/_authenticated/department.dashboard'
+import { Route as AuthenticatedDepartmentNewRequestRouteImport } from './routes/_authenticated/department.new-request'
+import { Route as AuthenticatedDepartmentNotificationsRouteImport } from './routes/_authenticated/department.notifications'
+import { Route as AuthenticatedDepartmentProfileRouteImport } from './routes/_authenticated/department.profile'
+import { Route as AuthenticatedLogisticsAssignmentsRouteImport } from './routes/_authenticated/logistics.assignments'
+import { Route as AuthenticatedLogisticsDashboardRouteImport } from './routes/_authenticated/logistics.dashboard'
+import { Route as AuthenticatedLogisticsDriversRouteImport } from './routes/_authenticated/logistics.drivers'
+import { Route as AuthenticatedLogisticsNotificationsRouteImport } from './routes/_authenticated/logistics.notifications'
+import { Route as AuthenticatedLogisticsReportsRouteImport } from './routes/_authenticated/logistics.reports'
+import { Route as AuthenticatedLogisticsScheduleRouteImport } from './routes/_authenticated/logistics.schedule'
+import { Route as AuthenticatedLogisticsVehiclesRouteImport } from './routes/_authenticated/logistics.vehicles'
+import { Route as AuthenticatedDepartmentRequestsIndexRouteImport } from './routes/_authenticated/department.requests.index'
+import { Route as AuthenticatedDepartmentRequestsIdRouteImport } from './routes/_authenticated/department.requests.$id'
+import { Route as AuthenticatedLogisticsRequestsIndexRouteImport } from './routes/_authenticated/logistics.requests.index'
+import { Route as AuthenticatedLogisticsRequestsIdRouteImport } from './routes/_authenticated/logistics.requests.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/admin/dashboard',
+    path: '/admin/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminDepartmentsRoute =
+  AuthenticatedAdminDepartmentsRouteImport.update({
+    id: '/admin/departments',
+    path: '/admin/departments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminDriversRoute =
+  AuthenticatedAdminDriversRouteImport.update({
+    id: '/admin/drivers',
+    path: '/admin/drivers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/admin/settings',
+    path: '/admin/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminVehiclesRoute =
+  AuthenticatedAdminVehiclesRouteImport.update({
+    id: '/admin/vehicles',
+    path: '/admin/vehicles',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentDashboardRoute =
+  AuthenticatedDepartmentDashboardRouteImport.update({
+    id: '/department/dashboard',
+    path: '/department/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentNewRequestRoute =
+  AuthenticatedDepartmentNewRequestRouteImport.update({
+    id: '/department/new-request',
+    path: '/department/new-request',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentNotificationsRoute =
+  AuthenticatedDepartmentNotificationsRouteImport.update({
+    id: '/department/notifications',
+    path: '/department/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentProfileRoute =
+  AuthenticatedDepartmentProfileRouteImport.update({
+    id: '/department/profile',
+    path: '/department/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsAssignmentsRoute =
+  AuthenticatedLogisticsAssignmentsRouteImport.update({
+    id: '/logistics/assignments',
+    path: '/logistics/assignments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsDashboardRoute =
+  AuthenticatedLogisticsDashboardRouteImport.update({
+    id: '/logistics/dashboard',
+    path: '/logistics/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsDriversRoute =
+  AuthenticatedLogisticsDriversRouteImport.update({
+    id: '/logistics/drivers',
+    path: '/logistics/drivers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsNotificationsRoute =
+  AuthenticatedLogisticsNotificationsRouteImport.update({
+    id: '/logistics/notifications',
+    path: '/logistics/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsReportsRoute =
+  AuthenticatedLogisticsReportsRouteImport.update({
+    id: '/logistics/reports',
+    path: '/logistics/reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsScheduleRoute =
+  AuthenticatedLogisticsScheduleRouteImport.update({
+    id: '/logistics/schedule',
+    path: '/logistics/schedule',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsVehiclesRoute =
+  AuthenticatedLogisticsVehiclesRouteImport.update({
+    id: '/logistics/vehicles',
+    path: '/logistics/vehicles',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentRequestsIndexRoute =
+  AuthenticatedDepartmentRequestsIndexRouteImport.update({
+    id: '/department/requests/',
+    path: '/department/requests/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentRequestsIdRoute =
+  AuthenticatedDepartmentRequestsIdRouteImport.update({
+    id: '/department/requests/$id',
+    path: '/department/requests/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsRequestsIndexRoute =
+  AuthenticatedLogisticsRequestsIndexRouteImport.update({
+    id: '/logistics/requests/',
+    path: '/logistics/requests/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsRequestsIdRoute =
+  AuthenticatedLogisticsRequestsIdRouteImport.update({
+    id: '/logistics/requests/$id',
+    path: '/logistics/requests/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
+  '/admin/drivers': typeof AuthenticatedAdminDriversRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
+  '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
+  '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
+  '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
+  '/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
+  '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/logistics/reports': typeof AuthenticatedLogisticsReportsRoute
+  '/logistics/schedule': typeof AuthenticatedLogisticsScheduleRoute
+  '/logistics/vehicles': typeof AuthenticatedLogisticsVehiclesRoute
+  '/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
+  '/logistics/requests/$id': typeof AuthenticatedLogisticsRequestsIdRoute
+  '/department/requests/': typeof AuthenticatedDepartmentRequestsIndexRoute
+  '/logistics/requests/': typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
+  '/admin/drivers': typeof AuthenticatedAdminDriversRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
+  '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
+  '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
+  '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
+  '/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
+  '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/logistics/reports': typeof AuthenticatedLogisticsReportsRoute
+  '/logistics/schedule': typeof AuthenticatedLogisticsScheduleRoute
+  '/logistics/vehicles': typeof AuthenticatedLogisticsVehiclesRoute
+  '/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
+  '/logistics/requests/$id': typeof AuthenticatedLogisticsRequestsIdRoute
+  '/department/requests': typeof AuthenticatedDepartmentRequestsIndexRoute
+  '/logistics/requests': typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
+  '/_authenticated/admin/drivers': typeof AuthenticatedAdminDriversRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/admin/vehicles': typeof AuthenticatedAdminVehiclesRoute
+  '/_authenticated/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/_authenticated/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
+  '/_authenticated/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
+  '/_authenticated/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/_authenticated/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
+  '/_authenticated/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
+  '/_authenticated/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
+  '/_authenticated/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/_authenticated/logistics/reports': typeof AuthenticatedLogisticsReportsRoute
+  '/_authenticated/logistics/schedule': typeof AuthenticatedLogisticsScheduleRoute
+  '/_authenticated/logistics/vehicles': typeof AuthenticatedLogisticsVehiclesRoute
+  '/_authenticated/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
+  '/_authenticated/logistics/requests/$id': typeof AuthenticatedLogisticsRequestsIdRoute
+  '/_authenticated/department/requests/': typeof AuthenticatedDepartmentRequestsIndexRoute
+  '/_authenticated/logistics/requests/': typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin/dashboard'
+    | '/admin/departments'
+    | '/admin/drivers'
+    | '/admin/settings'
+    | '/admin/users'
+    | '/admin/vehicles'
+    | '/department/dashboard'
+    | '/department/new-request'
+    | '/department/notifications'
+    | '/department/profile'
+    | '/logistics/assignments'
+    | '/logistics/dashboard'
+    | '/logistics/drivers'
+    | '/logistics/notifications'
+    | '/logistics/reports'
+    | '/logistics/schedule'
+    | '/logistics/vehicles'
+    | '/department/requests/$id'
+    | '/logistics/requests/$id'
+    | '/department/requests/'
+    | '/logistics/requests/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin/dashboard'
+    | '/admin/departments'
+    | '/admin/drivers'
+    | '/admin/settings'
+    | '/admin/users'
+    | '/admin/vehicles'
+    | '/department/dashboard'
+    | '/department/new-request'
+    | '/department/notifications'
+    | '/department/profile'
+    | '/logistics/assignments'
+    | '/logistics/dashboard'
+    | '/logistics/drivers'
+    | '/logistics/notifications'
+    | '/logistics/reports'
+    | '/logistics/schedule'
+    | '/logistics/vehicles'
+    | '/department/requests/$id'
+    | '/logistics/requests/$id'
+    | '/department/requests'
+    | '/logistics/requests'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/departments'
+    | '/_authenticated/admin/drivers'
+    | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/admin/vehicles'
+    | '/_authenticated/department/dashboard'
+    | '/_authenticated/department/new-request'
+    | '/_authenticated/department/notifications'
+    | '/_authenticated/department/profile'
+    | '/_authenticated/logistics/assignments'
+    | '/_authenticated/logistics/dashboard'
+    | '/_authenticated/logistics/drivers'
+    | '/_authenticated/logistics/notifications'
+    | '/_authenticated/logistics/reports'
+    | '/_authenticated/logistics/schedule'
+    | '/_authenticated/logistics/vehicles'
+    | '/_authenticated/department/requests/$id'
+    | '/_authenticated/logistics/requests/$id'
+    | '/_authenticated/department/requests/'
+    | '/_authenticated/logistics/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,12 +345,243 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/departments': {
+      id: '/_authenticated/admin/departments'
+      path: '/admin/departments'
+      fullPath: '/admin/departments'
+      preLoaderRoute: typeof AuthenticatedAdminDepartmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/drivers': {
+      id: '/_authenticated/admin/drivers'
+      path: '/admin/drivers'
+      fullPath: '/admin/drivers'
+      preLoaderRoute: typeof AuthenticatedAdminDriversRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/vehicles': {
+      id: '/_authenticated/admin/vehicles'
+      path: '/admin/vehicles'
+      fullPath: '/admin/vehicles'
+      preLoaderRoute: typeof AuthenticatedAdminVehiclesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/dashboard': {
+      id: '/_authenticated/department/dashboard'
+      path: '/department/dashboard'
+      fullPath: '/department/dashboard'
+      preLoaderRoute: typeof AuthenticatedDepartmentDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/new-request': {
+      id: '/_authenticated/department/new-request'
+      path: '/department/new-request'
+      fullPath: '/department/new-request'
+      preLoaderRoute: typeof AuthenticatedDepartmentNewRequestRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/notifications': {
+      id: '/_authenticated/department/notifications'
+      path: '/department/notifications'
+      fullPath: '/department/notifications'
+      preLoaderRoute: typeof AuthenticatedDepartmentNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/profile': {
+      id: '/_authenticated/department/profile'
+      path: '/department/profile'
+      fullPath: '/department/profile'
+      preLoaderRoute: typeof AuthenticatedDepartmentProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/assignments': {
+      id: '/_authenticated/logistics/assignments'
+      path: '/logistics/assignments'
+      fullPath: '/logistics/assignments'
+      preLoaderRoute: typeof AuthenticatedLogisticsAssignmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/dashboard': {
+      id: '/_authenticated/logistics/dashboard'
+      path: '/logistics/dashboard'
+      fullPath: '/logistics/dashboard'
+      preLoaderRoute: typeof AuthenticatedLogisticsDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/drivers': {
+      id: '/_authenticated/logistics/drivers'
+      path: '/logistics/drivers'
+      fullPath: '/logistics/drivers'
+      preLoaderRoute: typeof AuthenticatedLogisticsDriversRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/notifications': {
+      id: '/_authenticated/logistics/notifications'
+      path: '/logistics/notifications'
+      fullPath: '/logistics/notifications'
+      preLoaderRoute: typeof AuthenticatedLogisticsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/reports': {
+      id: '/_authenticated/logistics/reports'
+      path: '/logistics/reports'
+      fullPath: '/logistics/reports'
+      preLoaderRoute: typeof AuthenticatedLogisticsReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/schedule': {
+      id: '/_authenticated/logistics/schedule'
+      path: '/logistics/schedule'
+      fullPath: '/logistics/schedule'
+      preLoaderRoute: typeof AuthenticatedLogisticsScheduleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/vehicles': {
+      id: '/_authenticated/logistics/vehicles'
+      path: '/logistics/vehicles'
+      fullPath: '/logistics/vehicles'
+      preLoaderRoute: typeof AuthenticatedLogisticsVehiclesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/requests/': {
+      id: '/_authenticated/department/requests/'
+      path: '/department/requests'
+      fullPath: '/department/requests/'
+      preLoaderRoute: typeof AuthenticatedDepartmentRequestsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/department/requests/$id': {
+      id: '/_authenticated/department/requests/$id'
+      path: '/department/requests/$id'
+      fullPath: '/department/requests/$id'
+      preLoaderRoute: typeof AuthenticatedDepartmentRequestsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/requests/': {
+      id: '/_authenticated/logistics/requests/'
+      path: '/logistics/requests'
+      fullPath: '/logistics/requests/'
+      preLoaderRoute: typeof AuthenticatedLogisticsRequestsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/requests/$id': {
+      id: '/_authenticated/logistics/requests/$id'
+      path: '/logistics/requests/$id'
+      fullPath: '/logistics/requests/$id'
+      preLoaderRoute: typeof AuthenticatedLogisticsRequestsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminDepartmentsRoute: typeof AuthenticatedAdminDepartmentsRoute
+  AuthenticatedAdminDriversRoute: typeof AuthenticatedAdminDriversRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminVehiclesRoute: typeof AuthenticatedAdminVehiclesRoute
+  AuthenticatedDepartmentDashboardRoute: typeof AuthenticatedDepartmentDashboardRoute
+  AuthenticatedDepartmentNewRequestRoute: typeof AuthenticatedDepartmentNewRequestRoute
+  AuthenticatedDepartmentNotificationsRoute: typeof AuthenticatedDepartmentNotificationsRoute
+  AuthenticatedDepartmentProfileRoute: typeof AuthenticatedDepartmentProfileRoute
+  AuthenticatedLogisticsAssignmentsRoute: typeof AuthenticatedLogisticsAssignmentsRoute
+  AuthenticatedLogisticsDashboardRoute: typeof AuthenticatedLogisticsDashboardRoute
+  AuthenticatedLogisticsDriversRoute: typeof AuthenticatedLogisticsDriversRoute
+  AuthenticatedLogisticsNotificationsRoute: typeof AuthenticatedLogisticsNotificationsRoute
+  AuthenticatedLogisticsReportsRoute: typeof AuthenticatedLogisticsReportsRoute
+  AuthenticatedLogisticsScheduleRoute: typeof AuthenticatedLogisticsScheduleRoute
+  AuthenticatedLogisticsVehiclesRoute: typeof AuthenticatedLogisticsVehiclesRoute
+  AuthenticatedDepartmentRequestsIdRoute: typeof AuthenticatedDepartmentRequestsIdRoute
+  AuthenticatedLogisticsRequestsIdRoute: typeof AuthenticatedLogisticsRequestsIdRoute
+  AuthenticatedDepartmentRequestsIndexRoute: typeof AuthenticatedDepartmentRequestsIndexRoute
+  AuthenticatedLogisticsRequestsIndexRoute: typeof AuthenticatedLogisticsRequestsIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminDepartmentsRoute: AuthenticatedAdminDepartmentsRoute,
+  AuthenticatedAdminDriversRoute: AuthenticatedAdminDriversRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAdminVehiclesRoute: AuthenticatedAdminVehiclesRoute,
+  AuthenticatedDepartmentDashboardRoute: AuthenticatedDepartmentDashboardRoute,
+  AuthenticatedDepartmentNewRequestRoute:
+    AuthenticatedDepartmentNewRequestRoute,
+  AuthenticatedDepartmentNotificationsRoute:
+    AuthenticatedDepartmentNotificationsRoute,
+  AuthenticatedDepartmentProfileRoute: AuthenticatedDepartmentProfileRoute,
+  AuthenticatedLogisticsAssignmentsRoute:
+    AuthenticatedLogisticsAssignmentsRoute,
+  AuthenticatedLogisticsDashboardRoute: AuthenticatedLogisticsDashboardRoute,
+  AuthenticatedLogisticsDriversRoute: AuthenticatedLogisticsDriversRoute,
+  AuthenticatedLogisticsNotificationsRoute:
+    AuthenticatedLogisticsNotificationsRoute,
+  AuthenticatedLogisticsReportsRoute: AuthenticatedLogisticsReportsRoute,
+  AuthenticatedLogisticsScheduleRoute: AuthenticatedLogisticsScheduleRoute,
+  AuthenticatedLogisticsVehiclesRoute: AuthenticatedLogisticsVehiclesRoute,
+  AuthenticatedDepartmentRequestsIdRoute:
+    AuthenticatedDepartmentRequestsIdRoute,
+  AuthenticatedLogisticsRequestsIdRoute: AuthenticatedLogisticsRequestsIdRoute,
+  AuthenticatedDepartmentRequestsIndexRoute:
+    AuthenticatedDepartmentRequestsIndexRoute,
+  AuthenticatedLogisticsRequestsIndexRoute:
+    AuthenticatedLogisticsRequestsIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
