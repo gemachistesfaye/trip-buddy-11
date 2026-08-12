@@ -18,9 +18,12 @@ import { Route as AuthenticatedDepartmentDashboardRouteImport } from './routes/_
 import { Route as AuthenticatedDepartmentNewRequestRouteImport } from './routes/_authenticated/department.new-request'
 import { Route as AuthenticatedDepartmentNotificationsRouteImport } from './routes/_authenticated/department.notifications'
 import { Route as AuthenticatedDepartmentProfileRouteImport } from './routes/_authenticated/department.profile'
+import { Route as AuthenticatedLogisticsAssignmentsRouteImport } from './routes/_authenticated/logistics.assignments'
 import { Route as AuthenticatedLogisticsDashboardRouteImport } from './routes/_authenticated/logistics.dashboard'
 import { Route as AuthenticatedLogisticsDriversRouteImport } from './routes/_authenticated/logistics.drivers'
 import { Route as AuthenticatedLogisticsNotificationsRouteImport } from './routes/_authenticated/logistics.notifications'
+import { Route as AuthenticatedLogisticsReportsRouteImport } from './routes/_authenticated/logistics.reports'
+import { Route as AuthenticatedLogisticsScheduleRouteImport } from './routes/_authenticated/logistics.schedule'
 import { Route as AuthenticatedLogisticsVehiclesRouteImport } from './routes/_authenticated/logistics.vehicles'
 import { Route as AuthenticatedDepartmentRequestsIndexRouteImport } from './routes/_authenticated/department.requests.index'
 import { Route as AuthenticatedDepartmentRequestsIdRouteImport } from './routes/_authenticated/department.requests.$id'
@@ -77,6 +80,12 @@ const AuthenticatedDepartmentProfileRoute =
     path: '/department/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedLogisticsAssignmentsRoute =
+  AuthenticatedLogisticsAssignmentsRouteImport.update({
+    id: '/logistics/assignments',
+    path: '/logistics/assignments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedLogisticsDashboardRoute =
   AuthenticatedLogisticsDashboardRouteImport.update({
     id: '/logistics/dashboard',
@@ -93,6 +102,18 @@ const AuthenticatedLogisticsNotificationsRoute =
   AuthenticatedLogisticsNotificationsRouteImport.update({
     id: '/logistics/notifications',
     path: '/logistics/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsReportsRoute =
+  AuthenticatedLogisticsReportsRouteImport.update({
+    id: '/logistics/reports',
+    path: '/logistics/reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsScheduleRoute =
+  AuthenticatedLogisticsScheduleRouteImport.update({
+    id: '/logistics/schedule',
+    path: '/logistics/schedule',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedLogisticsVehiclesRoute =
@@ -135,9 +156,12 @@ export interface FileRoutesByFullPath {
   '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
   '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
   '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/logistics/reports': typeof AuthenticatedLogisticsReportsRoute
+  '/logistics/schedule': typeof AuthenticatedLogisticsScheduleRoute
   '/logistics/vehicles': typeof AuthenticatedLogisticsVehiclesRoute
   '/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
   '/logistics/requests/$id': typeof AuthenticatedLogisticsRequestsIdRoute
@@ -153,9 +177,12 @@ export interface FileRoutesByTo {
   '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
   '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
   '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/logistics/reports': typeof AuthenticatedLogisticsReportsRoute
+  '/logistics/schedule': typeof AuthenticatedLogisticsScheduleRoute
   '/logistics/vehicles': typeof AuthenticatedLogisticsVehiclesRoute
   '/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
   '/logistics/requests/$id': typeof AuthenticatedLogisticsRequestsIdRoute
@@ -173,9 +200,12 @@ export interface FileRoutesById {
   '/_authenticated/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/_authenticated/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/_authenticated/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/_authenticated/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
   '/_authenticated/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/_authenticated/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
   '/_authenticated/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/_authenticated/logistics/reports': typeof AuthenticatedLogisticsReportsRoute
+  '/_authenticated/logistics/schedule': typeof AuthenticatedLogisticsScheduleRoute
   '/_authenticated/logistics/vehicles': typeof AuthenticatedLogisticsVehiclesRoute
   '/_authenticated/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
   '/_authenticated/logistics/requests/$id': typeof AuthenticatedLogisticsRequestsIdRoute
@@ -193,9 +223,12 @@ export interface FileRouteTypes {
     | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
+    | '/logistics/assignments'
     | '/logistics/dashboard'
     | '/logistics/drivers'
     | '/logistics/notifications'
+    | '/logistics/reports'
+    | '/logistics/schedule'
     | '/logistics/vehicles'
     | '/department/requests/$id'
     | '/logistics/requests/$id'
@@ -211,9 +244,12 @@ export interface FileRouteTypes {
     | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
+    | '/logistics/assignments'
     | '/logistics/dashboard'
     | '/logistics/drivers'
     | '/logistics/notifications'
+    | '/logistics/reports'
+    | '/logistics/schedule'
     | '/logistics/vehicles'
     | '/department/requests/$id'
     | '/logistics/requests/$id'
@@ -230,9 +266,12 @@ export interface FileRouteTypes {
     | '/_authenticated/department/new-request'
     | '/_authenticated/department/notifications'
     | '/_authenticated/department/profile'
+    | '/_authenticated/logistics/assignments'
     | '/_authenticated/logistics/dashboard'
     | '/_authenticated/logistics/drivers'
     | '/_authenticated/logistics/notifications'
+    | '/_authenticated/logistics/reports'
+    | '/_authenticated/logistics/schedule'
     | '/_authenticated/logistics/vehicles'
     | '/_authenticated/department/requests/$id'
     | '/_authenticated/logistics/requests/$id'
@@ -311,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDepartmentProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/logistics/assignments': {
+      id: '/_authenticated/logistics/assignments'
+      path: '/logistics/assignments'
+      fullPath: '/logistics/assignments'
+      preLoaderRoute: typeof AuthenticatedLogisticsAssignmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/logistics/dashboard': {
       id: '/_authenticated/logistics/dashboard'
       path: '/logistics/dashboard'
@@ -330,6 +376,20 @@ declare module '@tanstack/react-router' {
       path: '/logistics/notifications'
       fullPath: '/logistics/notifications'
       preLoaderRoute: typeof AuthenticatedLogisticsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/reports': {
+      id: '/_authenticated/logistics/reports'
+      path: '/logistics/reports'
+      fullPath: '/logistics/reports'
+      preLoaderRoute: typeof AuthenticatedLogisticsReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/schedule': {
+      id: '/_authenticated/logistics/schedule'
+      path: '/logistics/schedule'
+      fullPath: '/logistics/schedule'
+      preLoaderRoute: typeof AuthenticatedLogisticsScheduleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/logistics/vehicles': {
@@ -377,9 +437,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDepartmentNewRequestRoute: typeof AuthenticatedDepartmentNewRequestRoute
   AuthenticatedDepartmentNotificationsRoute: typeof AuthenticatedDepartmentNotificationsRoute
   AuthenticatedDepartmentProfileRoute: typeof AuthenticatedDepartmentProfileRoute
+  AuthenticatedLogisticsAssignmentsRoute: typeof AuthenticatedLogisticsAssignmentsRoute
   AuthenticatedLogisticsDashboardRoute: typeof AuthenticatedLogisticsDashboardRoute
   AuthenticatedLogisticsDriversRoute: typeof AuthenticatedLogisticsDriversRoute
   AuthenticatedLogisticsNotificationsRoute: typeof AuthenticatedLogisticsNotificationsRoute
+  AuthenticatedLogisticsReportsRoute: typeof AuthenticatedLogisticsReportsRoute
+  AuthenticatedLogisticsScheduleRoute: typeof AuthenticatedLogisticsScheduleRoute
   AuthenticatedLogisticsVehiclesRoute: typeof AuthenticatedLogisticsVehiclesRoute
   AuthenticatedDepartmentRequestsIdRoute: typeof AuthenticatedDepartmentRequestsIdRoute
   AuthenticatedLogisticsRequestsIdRoute: typeof AuthenticatedLogisticsRequestsIdRoute
@@ -396,10 +459,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDepartmentNotificationsRoute:
     AuthenticatedDepartmentNotificationsRoute,
   AuthenticatedDepartmentProfileRoute: AuthenticatedDepartmentProfileRoute,
+  AuthenticatedLogisticsAssignmentsRoute:
+    AuthenticatedLogisticsAssignmentsRoute,
   AuthenticatedLogisticsDashboardRoute: AuthenticatedLogisticsDashboardRoute,
   AuthenticatedLogisticsDriversRoute: AuthenticatedLogisticsDriversRoute,
   AuthenticatedLogisticsNotificationsRoute:
     AuthenticatedLogisticsNotificationsRoute,
+  AuthenticatedLogisticsReportsRoute: AuthenticatedLogisticsReportsRoute,
+  AuthenticatedLogisticsScheduleRoute: AuthenticatedLogisticsScheduleRoute,
   AuthenticatedLogisticsVehiclesRoute: AuthenticatedLogisticsVehiclesRoute,
   AuthenticatedDepartmentRequestsIdRoute:
     AuthenticatedDepartmentRequestsIdRoute,
