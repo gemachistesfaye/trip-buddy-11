@@ -97,7 +97,10 @@ export function VehiclesManager() {
               className="space-y-4"
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!editing.plate_number?.trim()) return toast.error("Plate number is required");
+                if (!editing.plate_number?.trim()) {
+                  toast.error("Plate number is required");
+                  return;
+                }
                 save.mutate({ ...editing, plate_number: editing.plate_number.trim() });
               }}
             >

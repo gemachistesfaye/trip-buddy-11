@@ -98,7 +98,10 @@ export function DriversManager() {
               className="space-y-4"
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!editing.full_name?.trim()) return toast.error("Driver name is required");
+                if (!editing.full_name?.trim()) {
+                  toast.error("Driver name is required");
+                  return;
+                }
                 save.mutate({ ...editing, full_name: editing.full_name.trim() });
               }}
             >
