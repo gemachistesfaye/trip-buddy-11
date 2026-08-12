@@ -16,11 +16,11 @@ function fmt(date: string | null) {
 
 export function RequestsTable({
   requests,
-  basePath,
+  area,
   showDepartment = false,
 }: {
   requests: TransportRequest[];
-  basePath: "/department/requests" | "/logistics/requests";
+  area: "department" | "logistics";
   showDepartment?: boolean;
 }) {
   return (
@@ -57,7 +57,15 @@ export function RequestsTable({
               </TableCell>
               <TableCell className="text-right">
                 <Button asChild size="sm" variant="outline">
-                  <Link to={`${basePath}/${r.id}`}>Open</Link>
+                  {area === "department" ? (
+                    <Link to="/department/requests/$id" params={{ id: r.id }}>
+                      Open
+                    </Link>
+                  ) : (
+                    <Link to="/logistics/requests/$id" params={{ id: r.id }}>
+                      Open
+                    </Link>
+                  )}
                 </Button>
               </TableCell>
             </TableRow>
