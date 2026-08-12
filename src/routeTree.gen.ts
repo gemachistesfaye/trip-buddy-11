@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDepartmentDashboardRouteImport } from './routes/_authenticated/department.dashboard'
+import { Route as AuthenticatedDepartmentNewRequestRouteImport } from './routes/_authenticated/department.new-request'
 import { Route as AuthenticatedDepartmentNotificationsRouteImport } from './routes/_authenticated/department.notifications'
 import { Route as AuthenticatedDepartmentProfileRouteImport } from './routes/_authenticated/department.profile'
 import { Route as AuthenticatedLogisticsNotificationsRouteImport } from './routes/_authenticated/logistics.notifications'
@@ -36,6 +37,12 @@ const AuthenticatedDepartmentDashboardRoute =
   AuthenticatedDepartmentDashboardRouteImport.update({
     id: '/department/dashboard',
     path: '/department/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepartmentNewRequestRoute =
+  AuthenticatedDepartmentNewRequestRouteImport.update({
+    id: '/department/new-request',
+    path: '/department/new-request',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedDepartmentNotificationsRoute =
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
   '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
   '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/department/dashboard': typeof AuthenticatedDepartmentDashboardRoute
+  '/_authenticated/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/_authenticated/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/_authenticated/department/profile': typeof AuthenticatedDepartmentProfileRoute
   '/_authenticated/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/department/dashboard'
+    | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
     | '/logistics/notifications'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/department/dashboard'
+    | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
     | '/logistics/notifications'
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/department/dashboard'
+    | '/_authenticated/department/new-request'
     | '/_authenticated/department/notifications'
     | '/_authenticated/department/profile'
     | '/_authenticated/logistics/notifications'
@@ -159,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDepartmentDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/department/new-request': {
+      id: '/_authenticated/department/new-request'
+      path: '/department/new-request'
+      fullPath: '/department/new-request'
+      preLoaderRoute: typeof AuthenticatedDepartmentNewRequestRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/department/notifications': {
       id: '/_authenticated/department/notifications'
       path: '/department/notifications'
@@ -192,6 +212,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDepartmentDashboardRoute: typeof AuthenticatedDepartmentDashboardRoute
+  AuthenticatedDepartmentNewRequestRoute: typeof AuthenticatedDepartmentNewRequestRoute
   AuthenticatedDepartmentNotificationsRoute: typeof AuthenticatedDepartmentNotificationsRoute
   AuthenticatedDepartmentProfileRoute: typeof AuthenticatedDepartmentProfileRoute
   AuthenticatedLogisticsNotificationsRoute: typeof AuthenticatedLogisticsNotificationsRoute
@@ -200,6 +221,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDepartmentDashboardRoute: AuthenticatedDepartmentDashboardRoute,
+  AuthenticatedDepartmentNewRequestRoute:
+    AuthenticatedDepartmentNewRequestRoute,
   AuthenticatedDepartmentNotificationsRoute:
     AuthenticatedDepartmentNotificationsRoute,
   AuthenticatedDepartmentProfileRoute: AuthenticatedDepartmentProfileRoute,
