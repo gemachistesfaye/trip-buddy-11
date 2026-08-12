@@ -16,8 +16,11 @@ import { Route as AuthenticatedDepartmentDashboardRouteImport } from './routes/_
 import { Route as AuthenticatedDepartmentNewRequestRouteImport } from './routes/_authenticated/department.new-request'
 import { Route as AuthenticatedDepartmentNotificationsRouteImport } from './routes/_authenticated/department.notifications'
 import { Route as AuthenticatedDepartmentProfileRouteImport } from './routes/_authenticated/department.profile'
+import { Route as AuthenticatedLogisticsDashboardRouteImport } from './routes/_authenticated/logistics.dashboard'
 import { Route as AuthenticatedLogisticsNotificationsRouteImport } from './routes/_authenticated/logistics.notifications'
 import { Route as AuthenticatedDepartmentRequestsIndexRouteImport } from './routes/_authenticated/department.requests.index'
+import { Route as AuthenticatedDepartmentRequestsIdRouteImport } from './routes/_authenticated/department.requests.$id'
+import { Route as AuthenticatedLogisticsRequestsIndexRouteImport } from './routes/_authenticated/logistics.requests.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +60,12 @@ const AuthenticatedDepartmentProfileRoute =
     path: '/department/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedLogisticsDashboardRoute =
+  AuthenticatedLogisticsDashboardRouteImport.update({
+    id: '/logistics/dashboard',
+    path: '/logistics/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedLogisticsNotificationsRoute =
   AuthenticatedLogisticsNotificationsRouteImport.update({
     id: '/logistics/notifications',
@@ -69,6 +78,18 @@ const AuthenticatedDepartmentRequestsIndexRoute =
     path: '/department/requests/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDepartmentRequestsIdRoute =
+  AuthenticatedDepartmentRequestsIdRouteImport.update({
+    id: '/department/requests/$id',
+    path: '/department/requests/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLogisticsRequestsIndexRoute =
+  AuthenticatedLogisticsRequestsIndexRouteImport.update({
+    id: '/logistics/requests/',
+    path: '/logistics/requests/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -77,8 +98,11 @@ export interface FileRoutesByFullPath {
   '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
   '/department/requests/': typeof AuthenticatedDepartmentRequestsIndexRoute
+  '/logistics/requests/': typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -87,8 +111,11 @@ export interface FileRoutesByTo {
   '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
   '/department/requests': typeof AuthenticatedDepartmentRequestsIndexRoute
+  '/logistics/requests': typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,8 +126,11 @@ export interface FileRoutesById {
   '/_authenticated/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/_authenticated/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/_authenticated/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/_authenticated/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/_authenticated/logistics/notifications': typeof AuthenticatedLogisticsNotificationsRoute
+  '/_authenticated/department/requests/$id': typeof AuthenticatedDepartmentRequestsIdRoute
   '/_authenticated/department/requests/': typeof AuthenticatedDepartmentRequestsIndexRoute
+  '/_authenticated/logistics/requests/': typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,8 +141,11 @@ export interface FileRouteTypes {
     | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
+    | '/logistics/dashboard'
     | '/logistics/notifications'
+    | '/department/requests/$id'
     | '/department/requests/'
+    | '/logistics/requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,8 +154,11 @@ export interface FileRouteTypes {
     | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
+    | '/logistics/dashboard'
     | '/logistics/notifications'
+    | '/department/requests/$id'
     | '/department/requests'
+    | '/logistics/requests'
   id:
     | '__root__'
     | '/'
@@ -132,8 +168,11 @@ export interface FileRouteTypes {
     | '/_authenticated/department/new-request'
     | '/_authenticated/department/notifications'
     | '/_authenticated/department/profile'
+    | '/_authenticated/logistics/dashboard'
     | '/_authenticated/logistics/notifications'
+    | '/_authenticated/department/requests/$id'
     | '/_authenticated/department/requests/'
+    | '/_authenticated/logistics/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDepartmentProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/logistics/dashboard': {
+      id: '/_authenticated/logistics/dashboard'
+      path: '/logistics/dashboard'
+      fullPath: '/logistics/dashboard'
+      preLoaderRoute: typeof AuthenticatedLogisticsDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/logistics/notifications': {
       id: '/_authenticated/logistics/notifications'
       path: '/logistics/notifications'
@@ -207,6 +253,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDepartmentRequestsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/department/requests/$id': {
+      id: '/_authenticated/department/requests/$id'
+      path: '/department/requests/$id'
+      fullPath: '/department/requests/$id'
+      preLoaderRoute: typeof AuthenticatedDepartmentRequestsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics/requests/': {
+      id: '/_authenticated/logistics/requests/'
+      path: '/logistics/requests'
+      fullPath: '/logistics/requests/'
+      preLoaderRoute: typeof AuthenticatedLogisticsRequestsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -215,8 +275,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDepartmentNewRequestRoute: typeof AuthenticatedDepartmentNewRequestRoute
   AuthenticatedDepartmentNotificationsRoute: typeof AuthenticatedDepartmentNotificationsRoute
   AuthenticatedDepartmentProfileRoute: typeof AuthenticatedDepartmentProfileRoute
+  AuthenticatedLogisticsDashboardRoute: typeof AuthenticatedLogisticsDashboardRoute
   AuthenticatedLogisticsNotificationsRoute: typeof AuthenticatedLogisticsNotificationsRoute
+  AuthenticatedDepartmentRequestsIdRoute: typeof AuthenticatedDepartmentRequestsIdRoute
   AuthenticatedDepartmentRequestsIndexRoute: typeof AuthenticatedDepartmentRequestsIndexRoute
+  AuthenticatedLogisticsRequestsIndexRoute: typeof AuthenticatedLogisticsRequestsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -226,10 +289,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDepartmentNotificationsRoute:
     AuthenticatedDepartmentNotificationsRoute,
   AuthenticatedDepartmentProfileRoute: AuthenticatedDepartmentProfileRoute,
+  AuthenticatedLogisticsDashboardRoute: AuthenticatedLogisticsDashboardRoute,
   AuthenticatedLogisticsNotificationsRoute:
     AuthenticatedLogisticsNotificationsRoute,
+  AuthenticatedDepartmentRequestsIdRoute:
+    AuthenticatedDepartmentRequestsIdRoute,
   AuthenticatedDepartmentRequestsIndexRoute:
     AuthenticatedDepartmentRequestsIndexRoute,
+  AuthenticatedLogisticsRequestsIndexRoute:
+    AuthenticatedLogisticsRequestsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

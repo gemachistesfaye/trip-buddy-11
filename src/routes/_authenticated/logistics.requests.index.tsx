@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { fetchDepartments, fetchRequests, qk } from "@/lib/api";
 import { REQUEST_STATUSES, STATUS_LABELS } from "@/lib/domain";
 
-export const Route = createFileRoute("/_authenticated/logistics/requests")({
+export const Route = createFileRoute("/_authenticated/logistics/requests/")({
   head: () => ({
     meta: [
       { title: "Transport Requests | Logistics" },

@@ -148,7 +148,7 @@ export function AppShell({
 }: {
   area: Area;
   title: string;
-  description?: string;
+  description?: string | undefined;
   actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
