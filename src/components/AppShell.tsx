@@ -283,6 +283,11 @@ export function AppShell({
                   </Link>
                 </DropdownMenuItem>
               ) : null}
+              <DropdownMenuItem asChild>
+                <Link to="/change-password">
+                  <KeyRound className="mr-2 size-4" /> Change password
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleSignOut}>
                 <LogOut className="mr-2 size-4" /> Sign out
               </DropdownMenuItem>
