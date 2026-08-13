@@ -205,3 +205,5 @@ export const WEEKDAYS = [
   "Friday",
   "Saturday",
 ] as const;
+
+export const USER_EMAIL_DOMAIN = "@visionfund.local";

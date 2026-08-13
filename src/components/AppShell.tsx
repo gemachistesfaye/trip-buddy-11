@@ -19,6 +19,7 @@ import {
   Sun,
   ShieldCheck,
   type LucideIcon,
+  KeyRound,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -283,6 +284,11 @@ export function AppShell({
                   </Link>
                 </DropdownMenuItem>
               ) : null}
+              <DropdownMenuItem asChild>
+                <Link to="/change-password">
+                  <KeyRound className="mr-2 size-4" /> Change password
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleSignOut}>
                 <LogOut className="mr-2 size-4" /> Sign out
               </DropdownMenuItem>
