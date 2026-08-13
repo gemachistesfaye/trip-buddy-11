@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 import { Route as AuthenticatedAdminDepartmentsRouteImport } from './routes/_authenticated/admin.departments'
 import { Route as AuthenticatedAdminDriversRouteImport } from './routes/_authenticated/admin.drivers'
@@ -48,6 +49,12 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedChangePasswordRoute =
+  AuthenticatedChangePasswordRouteImport.update({
+    id: '/change-password',
+    path: '/change-password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/admin/dashboard',
@@ -177,6 +184,7 @@ const AuthenticatedLogisticsRequestsIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversRoute
@@ -229,6 +238,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
   '/_authenticated/admin/drivers': typeof AuthenticatedAdminDriversRoute
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/change-password'
     | '/admin/dashboard'
     | '/admin/departments'
     | '/admin/drivers'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/change-password'
     | '/admin/dashboard'
     | '/admin/departments'
     | '/admin/drivers'
@@ -307,6 +319,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/change-password'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/departments'
     | '/_authenticated/admin/drivers'
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/change-password': {
+      id: '/_authenticated/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
@@ -510,6 +530,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminDepartmentsRoute: typeof AuthenticatedAdminDepartmentsRoute
   AuthenticatedAdminDriversRoute: typeof AuthenticatedAdminDriversRoute
@@ -534,6 +555,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminDepartmentsRoute: AuthenticatedAdminDepartmentsRoute,
   AuthenticatedAdminDriversRoute: AuthenticatedAdminDriversRoute,
