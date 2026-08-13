@@ -43,9 +43,9 @@ const loginSchema = z.object({
 const signupSchema = loginSchema.extend({
   fullName: z.string().trim().min(2, "Enter your full name").max(100),
   phone: z.string().trim().max(30).optional(),
-  role: z.enum(["department_user", "logistics_officer", "admin"]),
-  departmentId: z.string().optional(),
+  departmentId: z.string().uuid("Select the department you belong to"),
 });
+
 
 function AuthPage() {
   const navigate = useNavigate();
