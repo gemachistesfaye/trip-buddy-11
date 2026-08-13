@@ -19,6 +19,7 @@ import {
   Sun,
   ShieldCheck,
   type LucideIcon,
+  KeyRound,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
