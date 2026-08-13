@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
-import { ROLE_HOME, STATUS_LABELS, type AppRole } from "@/lib/domain";
+import { ROLE_HOME } from "@/lib/domain";
 import { fetchDepartments, qk } from "@/lib/api";
 import { friendlyError } from "@/lib/rules";
 
