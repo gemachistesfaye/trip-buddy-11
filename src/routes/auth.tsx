@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
-import { ROLE_HOME, STATUS_LABELS, type AppRole } from "@/lib/domain";
+import { ROLE_HOME } from "@/lib/domain";
 import { fetchDepartments, qk } from "@/lib/api";
 import { friendlyError } from "@/lib/rules";
 
@@ -43,9 +43,9 @@ const loginSchema = z.object({
 const signupSchema = loginSchema.extend({
   fullName: z.string().trim().min(2, "Enter your full name").max(100),
   phone: z.string().trim().max(30).optional(),
-  role: z.enum(["department_user", "logistics_officer", "admin"]),
-  departmentId: z.string().optional(),
+  departmentId: z.string().uuid("Select the department you belong to"),
 });
+
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -162,7 +162,6 @@ function SignupForm({ departments }: { departments: { id: string; name: string }
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<AppRole>("department_user");
   const [departmentId, setDepartmentId] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -170,17 +169,13 @@ function SignupForm({ departments }: { departments: { id: string; name: string }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const parsed = signupSchema.safeParse({ fullName, email, phone, password, role, departmentId });
+    const parsed = signupSchema.safeParse({ fullName, email, phone, password, departmentId });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Check your details");
       return;
     }
-    if (parsed.data.role === "department_user" && !departmentId) {
-      setError("Select the department you belong to.");
-      return;
-    }
     setBusy(true);
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
@@ -188,8 +183,8 @@ function SignupForm({ departments }: { departments: { id: string; name: string }
         data: {
           full_name: parsed.data.fullName,
           phone: parsed.data.phone ?? "",
-          role: parsed.data.role,
-          department_id: departmentId,
+          role: "department_user",
+          department_id: parsed.data.departmentId,
         },
       },
     });
@@ -198,7 +193,11 @@ function SignupForm({ departments }: { departments: { id: string; name: string }
       setError(friendlyError(signUpError));
       return;
     }
-    toast.success("Account created. You are now signed in.");
+    if (data.session) {
+      toast.success("Account created. You are now signed in.");
+    } else {
+      toast.success("Account created. Check your email to confirm, then sign in.");
+    }
   }
 
   return (
@@ -208,6 +207,12 @@ function SignupForm({ departments }: { departments: { id: string; name: string }
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : null}
+      <Alert>
+        <AlertDescription className="text-xs">
+          Registration is for <strong>Department Users</strong> only. Logistics Officers and Administrators
+          sign in with the credentials provided by the system administrator.
+        </AlertDescription>
+      </Alert>
       <div className="space-y-2">
         <Label htmlFor="su-name">Full name</Label>
         <Input id="su-name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
@@ -233,45 +238,26 @@ function SignupForm({ departments }: { departments: { id: string; name: string }
           required
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label>Role</Label>
-          <Select value={role} onValueChange={(v) => setRole(v as AppRole)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {(["department_user", "logistics_officer", "admin"] as AppRole[]).map((r) => (
-                <SelectItem key={r} value={r}>
-                  {STATUS_LABELS[r]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label>Department</Label>
-          <Select value={departmentId} onValueChange={setDepartmentId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select department" />
-            </SelectTrigger>
-            <SelectContent>
-              {departments.map((d) => (
-                <SelectItem key={d.id} value={d.id}>
-                  {d.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <Label>Department</Label>
+        <Select value={departmentId} onValueChange={setDepartmentId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select department" />
+          </SelectTrigger>
+          <SelectContent>
+            {departments.map((d) => (
+              <SelectItem key={d.id} value={d.id}>
+                {d.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Roles are self-selected in this demonstration environment. In production an administrator assigns them.
-      </p>
       <Button type="submit" className="w-full" disabled={busy}>
         {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-        Create account
+        Create department account
       </Button>
     </form>
   );
 }
+
