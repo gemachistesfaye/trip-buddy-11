@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { AppShell } from "@/components/AppShell";
+import { AppShell, type Area } from "@/components/AppShell";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,8 @@ export const Route = createFileRoute("/_authenticated/change-password")({
 });
 
 function ChangePasswordPage() {
+  const { role } = useAuth();
+  const area: Area = role === "admin" ? "admin" : role === "logistics_officer" ? "logistics" : "department";
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +56,7 @@ function ChangePasswordPage() {
   }
 
   return (
-    <AppShell title="Change password" subtitle="Update the password for your account">
+    <AppShell area={area} title="Change password" description="Update the password for your account">
       <Card className="max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
