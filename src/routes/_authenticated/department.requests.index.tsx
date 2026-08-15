@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { FilePlus2 } from "lucide-react";
+import { Download, FilePlus2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { exportRequestsCsv } from "@/lib/export";
 import { DataState, EmptyState } from "@/components/DataState";
 import { RequestsTable } from "@/components/RequestsTable";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,9 @@ function MyRequests() {
               ))}
             </SelectContent>
           </Select>
+          <Button size="sm" variant="outline" onClick={() => exportRequestsCsv(filtered, "my-requests")}>
+            <Download className="mr-2 size-4" /> Export CSV
+          </Button>
           <Button asChild size="sm" className="ml-auto">
             <Link to="/department/new-request">
               <FilePlus2 className="mr-2 size-4" /> New request

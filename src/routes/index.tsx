@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Truck, ClipboardCheck, CalendarDays, BarChart3 } from "lucide-react";
+import logoUrl from "@/assets/vf-logo.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { ROLE_HOME } from "@/lib/domain";
@@ -44,8 +45,8 @@ function Index() {
       <header className="border-b">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Truck className="size-4.5" />
+            <span className="flex size-9 items-center justify-center overflow-hidden rounded-md bg-primary/10">
+              <img src={logoUrl} alt="VisionFund logo" width={512} height={512} className="size-7 object-contain" />
             </span>
             <div>
               <p className="text-sm font-semibold">Transport Management System</p>

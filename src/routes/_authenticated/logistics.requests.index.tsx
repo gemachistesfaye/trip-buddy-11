@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { exportRequestsCsv } from "@/lib/export";
 import { DataState, EmptyState } from "@/components/DataState";
 import { RequestsTable } from "@/components/RequestsTable";
 import { Input } from "@/components/ui/input";
@@ -62,6 +65,9 @@ function LogisticsRequests() {
               ))}
             </SelectContent>
           </Select>
+          <Button size="sm" variant="outline" onClick={() => exportRequestsCsv(filtered, "transport-requests")}>
+            <Download className="mr-2 size-4" /> Export CSV
+          </Button>
           <Select value={dept} onValueChange={setDept}>
             <SelectTrigger className="w-52">
               <SelectValue />

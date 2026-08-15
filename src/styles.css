@@ -159,3 +159,35 @@
   border: 1px solid var(--color-border);
   background-color: var(--color-card);
 }
+
+@media print {
+  .no-print,
+  aside,
+  header,
+  [data-slot="sheet-overlay"] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-block {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border-color: #ccc !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

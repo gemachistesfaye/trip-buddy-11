@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Ban } from "lucide-react";
+import { ArrowLeft, Ban, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,9 @@ function RequestDetail() {
             <Link to="/department/requests">
               <ArrowLeft className="mr-2 size-4" /> Back to requests
             </Link>
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-2 size-4" /> Print / PDF
           </Button>
           {data && canCancel(data.status) ? (
             <AlertDialog>
