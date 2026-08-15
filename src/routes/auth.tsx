@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { Truck, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import logoUrl from "@/assets/vf-logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -47,8 +48,8 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10">
       <div className="w-full max-w-md">
         <Link to="/" className="mb-6 flex items-center justify-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Truck className="size-4.5" />
+          <span className="flex size-9 items-center justify-center overflow-hidden rounded-md bg-primary/10">
+            <img src={logoUrl} alt="VisionFund logo" width={512} height={512} className="size-7 object-contain" />
           </span>
           <div>
             <p className="text-sm font-semibold">Transport Management System</p>
