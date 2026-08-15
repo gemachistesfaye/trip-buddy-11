@@ -85,7 +85,7 @@ export function RequestDetailCards({ request, days }: { request: TransportReques
       </Card>
 
       {days.length ? (
-        <Card>
+        <Card className="print-block">
           <CardHeader>
             <CardTitle className="text-base">Weekly schedule</CardTitle>
           </CardHeader>
@@ -99,6 +99,7 @@ export function RequestDetailCards({ request, days }: { request: TransportReques
                   <TableHead>Times</TableHead>
                   <TableHead className="text-right">Pax</TableHead>
                   <TableHead>Purpose</TableHead>
+                  <TableHead>Vehicle / Driver</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -116,6 +117,13 @@ export function RequestDetailCards({ request, days }: { request: TransportReques
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{d.number_of_passengers ?? "—"}</TableCell>
                     <TableCell className="max-w-48 truncate">{d.purpose ?? "—"}</TableCell>
+                    <TableCell className="whitespace-nowrap text-sm">
+                      {(() => {
+                        const a = assignments.find((x) => x.departure_datetime?.slice(0, 10) === d.trip_date);
+                        if (!a) return <span className="text-muted-foreground">Not allocated</span>;
+                        return `${a.vehicles?.plate_number ?? "—"} · ${a.drivers?.full_name ?? "—"}`;
+                      })()}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -125,7 +133,7 @@ export function RequestDetailCards({ request, days }: { request: TransportReques
       ) : null}
 
       {assignments.length ? (
-        <Card>
+        <Card className="print-block">
           <CardHeader>
             <CardTitle className="text-base">Vehicle assignment</CardTitle>
           </CardHeader>
