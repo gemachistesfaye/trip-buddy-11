@@ -33,6 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logoUrl from "@/assets/vf-logo.png";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { ROLE_HOME, STATUS_LABELS, type AppRole } from "@/lib/domain";
@@ -129,8 +130,8 @@ function NavLinks({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => 
 function Brand({ org }: { org: string }) {
   return (
     <div className="flex items-center gap-2.5 border-b border-sidebar-border px-4 py-4">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-        <Truck className="size-4.5" />
+      <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-sidebar-primary/10">
+        <img src={logoUrl} alt={`${org} logo`} width={512} height={512} loading="lazy" className="size-7 object-contain" />
       </span>
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-sidebar-foreground">{org}</p>
@@ -213,13 +214,13 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      <aside className="hidden w-64 shrink-0 flex-col bg-sidebar lg:flex">
+      <aside className="no-print hidden w-64 shrink-0 flex-col bg-sidebar lg:flex">
         <Brand org={org} />
         <NavLinks items={items} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-card/95 px-3 backdrop-blur sm:px-5">
+        <header className="no-print sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-card/95 px-3 backdrop-blur sm:px-5">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation">
