@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO, subMonths } from "date-fns";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Download, Printer } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { downloadCsv, exportRequestsCsv } from "@/lib/export";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/StatCard";
 import { DataState } from "@/components/DataState";
@@ -54,7 +57,36 @@ function ReportsPage() {
   const rejected = all.filter((r) => r.status === "rejected").length;
 
   return (
-    <AppShell area="logistics" title="Reports" description="Request volume, status mix and fleet utilisation">
+    <AppShell
+      area="logistics"
+      title="Reports"
+      description="Request volume, status mix and fleet utilisation"
+      actions={
+        <>
+          <Button size="sm" variant="outline" onClick={() => exportRequestsCsv(all, "transport-requests")}>
+            <Download className="mr-2 size-4" /> Export requests
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadCsv("transport-summary", [
+                ["Metric", "Name", "Value"],
+                ...byDepartment.map((d) => ["Requests per department", d.name, d.value]),
+                ...byStatus.map((d) => ["Status distribution", d.name, d.value]),
+                ...byMonth.map((d) => ["Requests per month", d.name, d.value]),
+                ...byVehicle.map((d) => ["Trips per vehicle", d.name, d.value]),
+              ])
+            }
+          >
+            <Download className="mr-2 size-4" /> Export summary
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-2 size-4" /> Print
+          </Button>
+        </>
+      }
+    >
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total requests" value={all.length} loading={requests.isLoading} />
         <StatCard label="Completed trips" value={completed} tone="success" loading={requests.isLoading} />
