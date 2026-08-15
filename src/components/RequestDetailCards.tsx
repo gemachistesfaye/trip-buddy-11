@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/StatusBadge";
 import { RequestTimeline } from "@/components/RequestTimeline";
+import logoUrl from "@/assets/vf-logo.png";
 import type { RequestDay, TransportRequest } from "@/lib/domain";
 
 function fmtDate(value: string | null) {
@@ -37,13 +38,26 @@ export function RequestDetailCards({ request, days }: { request: TransportReques
 
   return (
     <div className="space-y-4">
-      <Card>
+      <div className="print-only mb-4 border-b pb-3">
+        <div className="flex items-center gap-3">
+          <img src={logoUrl} alt="VisionFund logo" width={512} height={512} loading="lazy" className="size-12 object-contain" />
+          <div>
+            <p className="text-lg font-semibold">VisionFund</p>
+            <p className="text-sm">
+              {request.request_type === "weekly" ? "Weekly" : "Daily"} Transport Request Form · {request.request_number}
+            </p>
+            <p className="text-xs">Logistics &amp; Supply Chain Department</p>
+          </div>
+        </div>
+      </div>
+
+      <Card className="no-print">
         <CardContent className="p-4">
           <RequestTimeline status={request.status} />
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="print-block">
         <CardHeader className="flex-row items-center justify-between gap-3 space-y-0">
           <CardTitle className="text-base">{request.request_number}</CardTitle>
           <div className="flex gap-2">

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Check, Truck, X } from "lucide-react";
+import { ArrowLeft, Check, Printer, Truck, X } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -104,6 +104,9 @@ function ReviewRequest() {
       description={data?.request_number ?? undefined}
       actions={
         <>
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-2 size-4" /> Print / PDF
+          </Button>
           <Button asChild size="sm" variant="outline">
             <Link to="/logistics/requests">
               <ArrowLeft className="mr-2 size-4" /> Back
