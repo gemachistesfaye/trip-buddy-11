@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
+import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 import { Route as AuthenticatedAdminDepartmentsRouteImport } from './routes/_authenticated/admin.departments'
 import { Route as AuthenticatedAdminDriversRouteImport } from './routes/_authenticated/admin.drivers'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedDepartmentDashboardRouteImport } from './routes/_
 import { Route as AuthenticatedDepartmentNewRequestRouteImport } from './routes/_authenticated/department.new-request'
 import { Route as AuthenticatedDepartmentNotificationsRouteImport } from './routes/_authenticated/department.notifications'
 import { Route as AuthenticatedDepartmentProfileRouteImport } from './routes/_authenticated/department.profile'
+import { Route as AuthenticatedDriverTripsRouteImport } from './routes/_authenticated/driver.trips'
 import { Route as AuthenticatedLogisticsAssignmentsRouteImport } from './routes/_authenticated/logistics.assignments'
 import { Route as AuthenticatedLogisticsDashboardRouteImport } from './routes/_authenticated/logistics.dashboard'
 import { Route as AuthenticatedLogisticsDriversRouteImport } from './routes/_authenticated/logistics.drivers'
@@ -55,6 +57,11 @@ const AuthenticatedChangePasswordRoute =
     path: '/change-password',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/admin/dashboard',
@@ -112,6 +119,12 @@ const AuthenticatedDepartmentProfileRoute =
   AuthenticatedDepartmentProfileRouteImport.update({
     id: '/department/profile',
     path: '/department/profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDriverTripsRoute =
+  AuthenticatedDriverTripsRouteImport.update({
+    id: '/driver/trips',
+    path: '/driver/trips',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedLogisticsAssignmentsRoute =
@@ -185,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversRoute
@@ -195,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/driver/trips': typeof AuthenticatedDriverTripsRoute
   '/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
   '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
@@ -211,6 +226,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/change-password': typeof AuthenticatedChangePasswordRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversRoute
@@ -221,6 +237,7 @@ export interface FileRoutesByTo {
   '/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/driver/trips': typeof AuthenticatedDriverTripsRoute
   '/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
   '/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
@@ -239,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
+  '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/departments': typeof AuthenticatedAdminDepartmentsRoute
   '/_authenticated/admin/drivers': typeof AuthenticatedAdminDriversRoute
@@ -249,6 +267,7 @@ export interface FileRoutesById {
   '/_authenticated/department/new-request': typeof AuthenticatedDepartmentNewRequestRoute
   '/_authenticated/department/notifications': typeof AuthenticatedDepartmentNotificationsRoute
   '/_authenticated/department/profile': typeof AuthenticatedDepartmentProfileRoute
+  '/_authenticated/driver/trips': typeof AuthenticatedDriverTripsRoute
   '/_authenticated/logistics/assignments': typeof AuthenticatedLogisticsAssignmentsRoute
   '/_authenticated/logistics/dashboard': typeof AuthenticatedLogisticsDashboardRoute
   '/_authenticated/logistics/drivers': typeof AuthenticatedLogisticsDriversRoute
@@ -267,6 +286,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/change-password'
+    | '/admin/audit'
     | '/admin/dashboard'
     | '/admin/departments'
     | '/admin/drivers'
@@ -277,6 +297,7 @@ export interface FileRouteTypes {
     | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
+    | '/driver/trips'
     | '/logistics/assignments'
     | '/logistics/dashboard'
     | '/logistics/drivers'
@@ -293,6 +314,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/change-password'
+    | '/admin/audit'
     | '/admin/dashboard'
     | '/admin/departments'
     | '/admin/drivers'
@@ -303,6 +325,7 @@ export interface FileRouteTypes {
     | '/department/new-request'
     | '/department/notifications'
     | '/department/profile'
+    | '/driver/trips'
     | '/logistics/assignments'
     | '/logistics/dashboard'
     | '/logistics/drivers'
@@ -320,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/change-password'
+    | '/_authenticated/admin/audit'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/departments'
     | '/_authenticated/admin/drivers'
@@ -330,6 +354,7 @@ export interface FileRouteTypes {
     | '/_authenticated/department/new-request'
     | '/_authenticated/department/notifications'
     | '/_authenticated/department/profile'
+    | '/_authenticated/driver/trips'
     | '/_authenticated/logistics/assignments'
     | '/_authenticated/logistics/dashboard'
     | '/_authenticated/logistics/drivers'
@@ -377,6 +402,13 @@ declare module '@tanstack/react-router' {
       path: '/change-password'
       fullPath: '/change-password'
       preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/audit': {
+      id: '/_authenticated/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/dashboard': {
@@ -447,6 +479,13 @@ declare module '@tanstack/react-router' {
       path: '/department/profile'
       fullPath: '/department/profile'
       preLoaderRoute: typeof AuthenticatedDepartmentProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/driver/trips': {
+      id: '/_authenticated/driver/trips'
+      path: '/driver/trips'
+      fullPath: '/driver/trips'
+      preLoaderRoute: typeof AuthenticatedDriverTripsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/logistics/assignments': {
@@ -531,6 +570,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
+  AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminDepartmentsRoute: typeof AuthenticatedAdminDepartmentsRoute
   AuthenticatedAdminDriversRoute: typeof AuthenticatedAdminDriversRoute
@@ -541,6 +581,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDepartmentNewRequestRoute: typeof AuthenticatedDepartmentNewRequestRoute
   AuthenticatedDepartmentNotificationsRoute: typeof AuthenticatedDepartmentNotificationsRoute
   AuthenticatedDepartmentProfileRoute: typeof AuthenticatedDepartmentProfileRoute
+  AuthenticatedDriverTripsRoute: typeof AuthenticatedDriverTripsRoute
   AuthenticatedLogisticsAssignmentsRoute: typeof AuthenticatedLogisticsAssignmentsRoute
   AuthenticatedLogisticsDashboardRoute: typeof AuthenticatedLogisticsDashboardRoute
   AuthenticatedLogisticsDriversRoute: typeof AuthenticatedLogisticsDriversRoute
@@ -556,6 +597,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
+  AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminDepartmentsRoute: AuthenticatedAdminDepartmentsRoute,
   AuthenticatedAdminDriversRoute: AuthenticatedAdminDriversRoute,
@@ -568,6 +610,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDepartmentNotificationsRoute:
     AuthenticatedDepartmentNotificationsRoute,
   AuthenticatedDepartmentProfileRoute: AuthenticatedDepartmentProfileRoute,
+  AuthenticatedDriverTripsRoute: AuthenticatedDriverTripsRoute,
   AuthenticatedLogisticsAssignmentsRoute:
     AuthenticatedLogisticsAssignmentsRoute,
   AuthenticatedLogisticsDashboardRoute: AuthenticatedLogisticsDashboardRoute,

@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   type LucideIcon,
   KeyRound,
+  ScrollText,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -39,7 +40,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ROLE_HOME, STATUS_LABELS, type AppRole } from "@/lib/domain";
 import { fetchNotifications, fetchSettings, qk } from "@/lib/api";
 
-export type Area = "department" | "logistics" | "admin";
+export type Area = "department" | "logistics" | "admin" | "driver";
 
 interface NavItem {
   to: string;
@@ -65,6 +66,9 @@ const NAV: Record<Area, NavItem[]> = {
     { to: "/logistics/reports", label: "Reports", icon: BarChart3 },
     { to: "/logistics/notifications", label: "Notifications", icon: Bell },
   ],
+  driver: [
+    { to: "/driver/trips", label: "My Trips", icon: CalendarDays },
+  ],
   admin: [
     { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/admin/users", label: "Users", icon: Users },
@@ -72,6 +76,7 @@ const NAV: Record<Area, NavItem[]> = {
     { to: "/admin/vehicles", label: "Vehicles", icon: Truck },
     { to: "/admin/drivers", label: "Drivers", icon: User },
     { to: "/admin/settings", label: "System Settings", icon: Settings },
+    { to: "/admin/audit", label: "Audit Log", icon: ScrollText },
   ],
 };
 
@@ -79,6 +84,7 @@ const AREA_ROLES: Record<Area, AppRole[]> = {
   department: ["department_user"],
   logistics: ["logistics_officer", "admin"],
   admin: ["admin"],
+  driver: ["driver"],
 };
 
 function useTheme() {
@@ -246,7 +252,15 @@ export function AppShell({
           </Button>
 
           <Link
-            to={area === "admin" ? "/admin/dashboard" : `/${area}/notifications`}
+            to={
+              area === "logistics"
+                ? "/logistics/notifications"
+                : area === "department"
+                  ? "/department/notifications"
+                  : area === "driver"
+                    ? "/driver/trips"
+                    : "/admin/dashboard"
+            }
             className="relative inline-flex size-9 items-center justify-center rounded-md text-foreground hover:bg-accent"
             aria-label="Notifications"
           >
