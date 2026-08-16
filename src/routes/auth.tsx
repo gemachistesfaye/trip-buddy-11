@@ -77,6 +77,9 @@ function AuthPage() {
               <strong>Logistics Officer:</strong> logistics
             </li>
             <li>
+              <strong>Drivers:</strong> driver1 … driver9
+            </li>
+            <li>
               <strong>Administrator:</strong> admin
             </li>
             <li>
