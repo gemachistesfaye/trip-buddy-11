@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Ban, Printer } from "lucide-react";
+import { ArrowLeft, Ban, CopyPlus, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { fetchRequest, fetchRequestDays, qk, updateRequestStatus } from "@/lib/api";
+import { fetchRequest, fetchRequestDays, qk, repeatRequest, updateRequestStatus } from "@/lib/api";
 import { canCancel, friendlyError } from "@/lib/rules";
 
 export const Route = createFileRoute("/_authenticated/department/requests/$id")({
@@ -35,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/department/requests/$id")(
 function RequestDetail() {
   const { id } = useParams({ from: "/_authenticated/department/requests/$id" });
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const request = useQuery({ queryKey: qk.request(id), queryFn: () => fetchRequest(id) });
   const days = useQuery({ queryKey: ["request-days", id], queryFn: () => fetchRequestDays(id) });
@@ -44,6 +45,19 @@ function RequestDetail() {
     onSuccess: () => {
       toast.success("Request cancelled");
       void queryClient.invalidateQueries();
+    },
+    onError: (e) => toast.error(friendlyError(e)),
+  });
+
+  const repeat = useMutation({
+    mutationFn: async (offsetDays: number) => {
+      if (!request.data) throw new Error("Request not loaded");
+      return repeatRequest(request.data, offsetDays);
+    },
+    onSuccess: (created) => {
+      toast.success("New request submitted from this one");
+      void queryClient.invalidateQueries();
+      void navigate({ to: "/department/requests/$id", params: { id: created.id } });
     },
     onError: (e) => toast.error(friendlyError(e)),
   });
@@ -65,6 +79,11 @@ function RequestDetail() {
           <Button size="sm" variant="outline" onClick={() => window.print()}>
             <Printer className="mr-2 size-4" /> Print / PDF
           </Button>
+          {data ? (
+            <Button size="sm" variant="outline" onClick={() => repeat.mutate(7)} disabled={repeat.isPending}>
+              <CopyPlus className="mr-2 size-4" /> Repeat next week
+            </Button>
+          ) : null}
           {data && canCancel(data.status) ? (
             <AlertDialog>
               <AlertDialogTrigger asChild>
