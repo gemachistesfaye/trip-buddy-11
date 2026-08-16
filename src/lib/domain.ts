@@ -3,7 +3,7 @@
  * Kept in one place so business vocabulary is never duplicated.
  */
 
-export type AppRole = "department_user" | "logistics_officer" | "admin";
+export type AppRole = "department_user" | "logistics_officer" | "admin" | "driver";
 export type VehicleStatus = "available" | "assigned" | "maintenance" | "unavailable";
 export type DriverStatus = "available" | "assigned" | "unavailable" | "leave";
 export type RequestType = "daily" | "weekly";
@@ -58,6 +58,7 @@ export interface Driver {
   assigned_vehicle_id: string | null;
   notes: string | null;
   is_active: boolean;
+  auth_user_id?: string | null;
 }
 
 export interface Vehicle {
@@ -70,6 +71,11 @@ export interface Vehicle {
   assigned_driver_id: string | null;
   notes: string | null;
   is_active: boolean;
+  current_odometer: number;
+  service_interval_km: number;
+  last_service_odometer: number;
+  last_service_date: string | null;
+  next_service_due_date: string | null;
   drivers?: Pick<Driver, "id" | "full_name" | "phone"> | null;
 }
 
@@ -127,6 +133,10 @@ export interface Assignment {
   expected_return_datetime: string;
   notes: string | null;
   status: AssignmentStatus;
+  actual_departure_datetime: string | null;
+  actual_return_datetime: string | null;
+  odometer_start: number | null;
+  odometer_end: number | null;
   vehicles?: Pick<Vehicle, "id" | "plate_number" | "vehicle_type" | "model" | "passenger_capacity"> | null;
   drivers?: Pick<Driver, "id" | "full_name" | "phone"> | null;
   transport_requests?: TransportRequest | null;
@@ -180,12 +190,14 @@ export const STATUS_LABELS: Record<string, string> = {
   department_user: "Department User",
   logistics_officer: "Logistics Officer",
   admin: "Administrator",
+  driver: "Driver",
 };
 
 export const ROLE_HOME: Record<AppRole, string> = {
   department_user: "/department/dashboard",
   logistics_officer: "/logistics/dashboard",
   admin: "/admin/dashboard",
+  driver: "/driver/trips",
 };
 
 /** Ordered lifecycle used by the request timeline component. */

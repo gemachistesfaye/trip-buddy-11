@@ -52,6 +52,19 @@ function ReportsPage() {
   const byStatus = count(all, (r) => STATUS_LABELS[r.status] ?? r.status);
   const byMonth = count(recent, (r) => format(parseISO(r.created_at), "MMM yyyy")).reverse();
   const byVehicle = count(assignments.data ?? [], (a) => a.vehicles?.plate_number ?? "Unknown").slice(0, 8);
+  const byDestination = count(
+    all.filter((r) => r.destination),
+    (r) => (r.destination ?? "").trim(),
+  ).slice(0, 8);
+  const byDriver = count(assignments.data ?? [], (a) => a.drivers?.full_name ?? "Unknown").slice(0, 8);
+  const kmTravelled = (assignments.data ?? []).reduce((sum, a) => {
+    const start = a.odometer_start ?? 0;
+    const end = a.odometer_end ?? 0;
+    return sum + (end > start ? end - start : 0);
+  }, 0);
+  const passengersMoved = all
+    .filter((r) => r.status === "completed")
+    .reduce((sum, r) => sum + (r.number_of_passengers ?? 0), 0);
 
   const completed = all.filter((r) => r.status === "completed").length;
   const rejected = all.filter((r) => r.status === "rejected").length;
@@ -76,6 +89,10 @@ function ReportsPage() {
                 ...byStatus.map((d) => ["Status distribution", d.name, d.value]),
                 ...byMonth.map((d) => ["Requests per month", d.name, d.value]),
                 ...byVehicle.map((d) => ["Trips per vehicle", d.name, d.value]),
+                ...byDestination.map((d) => ["Top destinations", d.name, d.value]),
+                ...byDriver.map((d) => ["Trips per driver", d.name, d.value]),
+                ["Kilometres travelled", "Total", kmTravelled],
+                ["Passengers transported", "Completed trips", passengersMoved],
               ])
             }
           >
@@ -92,6 +109,8 @@ function ReportsPage() {
         <StatCard label="Completed trips" value={completed} tone="success" loading={requests.isLoading} />
         <StatCard label="Rejected" value={rejected} tone="destructive" loading={requests.isLoading} />
         <StatCard label="Assignments" value={(assignments.data ?? []).length} tone="primary" loading={assignments.isLoading} />
+        <StatCard label="Kilometres travelled" value={kmTravelled.toLocaleString()} loading={assignments.isLoading} />
+        <StatCard label="Passengers transported" value={passengersMoved} tone="primary" loading={requests.isLoading} />
       </div>
 
       <DataState isLoading={requests.isLoading} error={requests.error} onRetry={() => void requests.refetch()}>
@@ -160,6 +179,39 @@ function ReportsPage() {
                   <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
                   <Tooltip />
                   <Bar dataKey="value" fill="#0ea5e9" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Top destinations</CardTitle>
+            </CardHeader>
+            <CardContent className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={byDestination} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Trips per driver</CardTitle>
+            </CardHeader>
+            <CardContent className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={byDriver} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#f59e0b" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

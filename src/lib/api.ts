@@ -284,6 +284,11 @@ export async function upsertVehicle(vehicle: Partial<Vehicle> & { plate_number: 
     assigned_driver_id: vehicle.assigned_driver_id || null,
     notes: vehicle.notes ?? null,
     is_active: vehicle.is_active ?? true,
+    current_odometer: vehicle.current_odometer ?? 0,
+    service_interval_km: vehicle.service_interval_km ?? 5000,
+    last_service_odometer: vehicle.last_service_odometer ?? 0,
+    last_service_date: vehicle.last_service_date || null,
+    next_service_due_date: vehicle.next_service_due_date || null,
   };
   const res = vehicle.id
     ? await supabase.from("vehicles").update(payload).eq("id", vehicle.id)
@@ -339,4 +344,156 @@ export async function setUserRole(userId: string, role: AppRole) {
 export async function saveSetting(key: string, value: string) {
   const { error } = await supabase.from("system_settings").update({ value }).eq("key", key);
   if (error) throw new Error(error.message);
+}
+
+/* ------------------------- trip completion & mileage ----------------------- */
+
+export interface TripCompletionInput {
+  id: string;
+  requestId: string;
+  actual_departure_datetime?: string | null;
+  actual_return_datetime?: string | null;
+  odometer_start?: number | null;
+  odometer_end?: number | null;
+}
+
+/** Driver or logistics records what actually happened, then closes the trip. */
+export async function completeTrip(input: TripCompletionInput) {
+  const { error } = await supabase
+    .from("transport_assignments")
+    .update({
+      status: "completed",
+      actual_departure_datetime: input.actual_departure_datetime ?? null,
+      actual_return_datetime: input.actual_return_datetime ?? new Date().toISOString(),
+      odometer_start: input.odometer_start ?? null,
+      odometer_end: input.odometer_end ?? null,
+    })
+    .eq("id", input.id);
+  if (error) throw new Error(error.message);
+  await updateRequestStatus(input.requestId, { status: "completed", completed_at: new Date().toISOString() });
+}
+
+export async function startTrip(id: string, requestId: string, odometerStart: number | null) {
+  const { error } = await supabase
+    .from("transport_assignments")
+    .update({
+      status: "in_progress",
+      actual_departure_datetime: new Date().toISOString(),
+      odometer_start: odometerStart,
+    })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  await updateRequestStatus(requestId, { status: "in_progress" });
+}
+
+/* ------------------------------ driver portal ------------------------------ */
+
+export async function fetchDriverByUser(userId: string): Promise<Driver | null> {
+  const res = await supabase.from("drivers").select("*").eq("auth_user_id", userId).maybeSingle();
+  if (res.error) throw new Error(res.error.message);
+  return res.data as Driver | null;
+}
+
+export async function fetchDriverAssignments(driverId: string): Promise<Assignment[]> {
+  return unwrap<Assignment[]>(
+    (await supabase
+      .from("transport_assignments")
+      .select(
+        "*, vehicles(id,plate_number,vehicle_type,model,passenger_capacity), transport_requests(id,request_number,destination,purpose,number_of_passengers,contact_number,status,request_type,departments(id,name,code))",
+      )
+      .eq("driver_id", driverId)
+      .order("departure_datetime", { ascending: true })) as unknown as {
+      data: Assignment[] | null;
+      error: { message: string } | null;
+    },
+  );
+}
+
+/* -------------------------------- audit log -------------------------------- */
+
+export interface AuditLog {
+  id: string;
+  user_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string | null;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export async function fetchAuditLogs(limit = 300): Promise<AuditLog[]> {
+  return unwrap<AuditLog[]>(
+    (await supabase
+      .from("audit_logs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit)) as unknown as { data: AuditLog[] | null; error: { message: string } | null },
+  );
+}
+
+/* ------------------------------- bulk actions ------------------------------ */
+
+export async function bulkApprove(ids: string[]) {
+  if (!ids.length) return;
+  const { error } = await supabase
+    .from("transport_requests")
+    .update({ status: "approved", reviewed_at: new Date().toISOString() })
+    .in("id", ids);
+  if (error) throw new Error(error.message);
+}
+
+/* ---------------------------- repeat a request ----------------------------- */
+
+/** Clone an existing request (and its weekly day rows) onto new dates. */
+export async function repeatRequest(source: TransportRequest, offsetDays: number) {
+  const shift = (value: string | null) => {
+    if (!value) return null;
+    const d = new Date(`${value}T00:00:00`);
+    d.setDate(d.getDate() + offsetDays);
+    return d.toISOString().slice(0, 10);
+  };
+
+  const { data, error } = await supabase
+    .from("transport_requests")
+    .insert({
+      request_type: source.request_type,
+      requesting_department_id: source.requesting_department_id,
+      requester_id: source.requester_id,
+      contact_number: source.contact_number,
+      request_date: new Date().toISOString().slice(0, 10),
+      trip_from_date: shift(source.trip_from_date),
+      trip_to_date: shift(source.trip_to_date),
+      number_of_passengers: source.number_of_passengers,
+      destination: source.destination,
+      preferred_departure_time: source.preferred_departure_time,
+      estimated_return_time: source.estimated_return_time,
+      purpose: source.purpose,
+      goods_carried: source.goods_carried,
+      remarks: source.remarks,
+      status: "submitted",
+      submitted_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  const days = await fetchRequestDays(source.id);
+  if (days.length) {
+    const rows = days.map((d) => ({
+      transport_request_id: data.id,
+      trip_date: shift(d.trip_date) as string,
+      morning_requested: d.morning_requested,
+      afternoon_requested: d.afternoon_requested,
+      departure_time: d.departure_time,
+      return_time: d.return_time,
+      destination: d.destination,
+      number_of_passengers: d.number_of_passengers,
+      purpose: d.purpose,
+      goods_carried: d.goods_carried,
+    }));
+    const res = await supabase.from("transport_request_days").insert(rows);
+    if (res.error) throw new Error(res.error.message);
+  }
+  return data;
 }

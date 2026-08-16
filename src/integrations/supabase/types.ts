@@ -83,6 +83,7 @@ export type Database = {
       drivers: {
         Row: {
           assigned_vehicle_id: string | null
+          auth_user_id: string | null
           created_at: string
           full_name: string
           id: string
@@ -95,6 +96,7 @@ export type Database = {
         }
         Insert: {
           assigned_vehicle_id?: string | null
+          auth_user_id?: string | null
           created_at?: string
           full_name: string
           id?: string
@@ -107,6 +109,7 @@ export type Database = {
         }
         Update: {
           assigned_vehicle_id?: string | null
+          auth_user_id?: string | null
           created_at?: string
           full_name?: string
           id?: string
@@ -235,6 +238,8 @@ export type Database = {
       }
       transport_assignments: {
         Row: {
+          actual_departure_datetime: string | null
+          actual_return_datetime: string | null
           assigned_by: string | null
           assignment_date: string
           created_at: string
@@ -243,12 +248,16 @@ export type Database = {
           expected_return_datetime: string
           id: string
           notes: string | null
+          odometer_end: number | null
+          odometer_start: number | null
           status: Database["public"]["Enums"]["assignment_status"]
           transport_request_id: string
           updated_at: string
           vehicle_id: string
         }
         Insert: {
+          actual_departure_datetime?: string | null
+          actual_return_datetime?: string | null
           assigned_by?: string | null
           assignment_date?: string
           created_at?: string
@@ -257,12 +266,16 @@ export type Database = {
           expected_return_datetime: string
           id?: string
           notes?: string | null
+          odometer_end?: number | null
+          odometer_start?: number | null
           status?: Database["public"]["Enums"]["assignment_status"]
           transport_request_id: string
           updated_at?: string
           vehicle_id: string
         }
         Update: {
+          actual_departure_datetime?: string | null
+          actual_return_datetime?: string | null
           assigned_by?: string | null
           assignment_date?: string
           created_at?: string
@@ -271,6 +284,8 @@ export type Database = {
           expected_return_datetime?: string
           id?: string
           notes?: string | null
+          odometer_end?: number | null
+          odometer_start?: number | null
           status?: Database["public"]["Enums"]["assignment_status"]
           transport_request_id?: string
           updated_at?: string
@@ -478,39 +493,54 @@ export type Database = {
         Row: {
           assigned_driver_id: string | null
           created_at: string
+          current_odometer: number
           current_status: Database["public"]["Enums"]["vehicle_status"]
           id: string
           is_active: boolean
+          last_service_date: string | null
+          last_service_odometer: number
           model: string | null
+          next_service_due_date: string | null
           notes: string | null
           passenger_capacity: number
           plate_number: string
+          service_interval_km: number
           updated_at: string
           vehicle_type: string
         }
         Insert: {
           assigned_driver_id?: string | null
           created_at?: string
+          current_odometer?: number
           current_status?: Database["public"]["Enums"]["vehicle_status"]
           id?: string
           is_active?: boolean
+          last_service_date?: string | null
+          last_service_odometer?: number
           model?: string | null
+          next_service_due_date?: string | null
           notes?: string | null
           passenger_capacity?: number
           plate_number: string
+          service_interval_km?: number
           updated_at?: string
           vehicle_type?: string
         }
         Update: {
           assigned_driver_id?: string | null
           created_at?: string
+          current_odometer?: number
           current_status?: Database["public"]["Enums"]["vehicle_status"]
           id?: string
           is_active?: boolean
+          last_service_date?: string | null
+          last_service_odometer?: number
           model?: string | null
+          next_service_due_date?: string | null
           notes?: string | null
           passenger_capacity?: number
           plate_number?: string
+          service_interval_km?: number
           updated_at?: string
           vehicle_type?: string
         }
@@ -530,7 +560,9 @@ export type Database = {
     }
     Functions: {
       current_department_id: { Args: never; Returns: string }
+      current_driver_id: { Args: never; Returns: string }
       current_profile_id: { Args: never; Returns: string }
+      escalate_unassigned_requests: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -550,7 +582,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "department_user" | "logistics_officer" | "admin"
+      app_role: "department_user" | "logistics_officer" | "admin" | "driver"
       assignment_status: "assigned" | "in_progress" | "completed" | "cancelled"
       driver_status: "available" | "assigned" | "unavailable" | "leave"
       notification_type:
@@ -700,7 +732,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["department_user", "logistics_officer", "admin"],
+      app_role: ["department_user", "logistics_officer", "admin", "driver"],
       assignment_status: ["assigned", "in_progress", "completed", "cancelled"],
       driver_status: ["available", "assigned", "unavailable", "leave"],
       notification_type: [
