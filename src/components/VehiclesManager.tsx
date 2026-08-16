@@ -16,6 +16,16 @@ import { friendlyError } from "@/lib/rules";
 import type { Vehicle, VehicleStatus } from "@/lib/domain";
 
 const STATUSES: VehicleStatus[] = ["available", "assigned", "maintenance", "unavailable"];
+function serviceHint(v: Vehicle): string {
+  const interval = v.service_interval_km ?? 0;
+  const since = (v.current_odometer ?? 0) - (v.last_service_odometer ?? 0);
+  const dueDate = v.next_service_due_date ? new Date(v.next_service_due_date) : null;
+  if (dueDate && dueDate <= new Date()) return "Service overdue (date)";
+  if (interval > 0 && since >= interval) return "Service due now";
+  if (interval > 0) return `${Math.max(interval - since, 0).toLocaleString()} km to service`;
+  return dueDate ? `Due ${dueDate.toLocaleDateString()}` : "—";
+}
+
 const TYPES = ["Sedan", "SUV", "Pickup", "Minibus", "Bus", "Truck"];
 
 export function VehiclesManager() {
@@ -61,6 +71,8 @@ export function VehiclesManager() {
                 <TableHead className="text-right">Capacity</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Default driver</TableHead>
+                <TableHead className="text-right">Odometer</TableHead>
+                <TableHead>Service</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -75,6 +87,8 @@ export function VehiclesManager() {
                     <StatusBadge status={v.current_status} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">{v.drivers?.full_name ?? "—"}</TableCell>
+                  <TableCell className="text-right tabular-nums">{(v.current_odometer ?? 0).toLocaleString()} km</TableCell>
+                  <TableCell className="text-muted-foreground">{serviceHint(v)}</TableCell>
                   <TableCell className="text-right">
                     <Button size="sm" variant="outline" onClick={() => setEditing(v)}>
                       Edit
@@ -188,6 +202,47 @@ export function VehiclesManager() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="odo">Current odometer (km)</Label>
+                  <Input
+                    id="odo"
+                    type="number"
+                    min={0}
+                    value={editing.current_odometer ?? 0}
+                    onChange={(e) => setEditing({ ...editing, current_odometer: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="interval">Service interval (km)</Label>
+                  <Input
+                    id="interval"
+                    type="number"
+                    min={0}
+                    value={editing.service_interval_km ?? 5000}
+                    onChange={(e) => setEditing({ ...editing, service_interval_km: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastodo">Odometer at last service (km)</Label>
+                  <Input
+                    id="lastodo"
+                    type="number"
+                    min={0}
+                    value={editing.last_service_odometer ?? 0}
+                    onChange={(e) => setEditing({ ...editing, last_service_odometer: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nextservice">Next service due date</Label>
+                  <Input
+                    id="nextservice"
+                    type="date"
+                    value={editing.next_service_due_date ?? ""}
+                    onChange={(e) => setEditing({ ...editing, next_service_due_date: e.target.value || null })}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
