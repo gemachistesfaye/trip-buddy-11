@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Users } from "lucide-react";
+import { Download, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DataState, EmptyState } from "@/components/DataState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { fetchDrivers, fetchVehicles, qk, upsertDriver } from "@/lib/api";
+import { exportDriversCsv } from "@/lib/export";
 import { friendlyError } from "@/lib/rules";
 import type { Driver, DriverStatus } from "@/lib/domain";
 
@@ -41,7 +42,15 @@ export function DriversManager() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => exportDriversCsv(list, vehicles.data ?? [])}
+          disabled={list.length === 0}
+        >
+          <Download className="mr-2 size-4" /> Export directory
+        </Button>
         <Button size="sm" onClick={() => setEditing({ full_name: "", status: "available" })}>
           <Plus className="mr-2 size-4" /> Add driver
         </Button>

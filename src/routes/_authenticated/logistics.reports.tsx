@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer,
 import { Download, Printer } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { downloadCsv, exportRequestsCsv } from "@/lib/export";
+import { downloadCsv, exportAssignmentsCsv, exportRequestsCsv } from "@/lib/export";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/StatCard";
 import { DataState } from "@/components/DataState";
