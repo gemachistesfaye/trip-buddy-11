@@ -34,7 +34,7 @@ export const qk = {
 };
 
 const REQUEST_SELECT =
-  "*, departments(id,name,code), profiles(id,full_name,email,phone), transport_assignments(*, vehicles(id,plate_number,vehicle_type,model,passenger_capacity), drivers(id,full_name,phone))";
+  "*, departments(id,name,code), profiles:requester_id(id,full_name,email,phone), transport_assignments(*, vehicles(id,plate_number,vehicle_type,model,passenger_capacity), drivers(id,full_name,phone))";
 
 export async function fetchDepartments(): Promise<Department[]> {
   return unwrap(await supabase.from("departments").select("*").order("name"));
