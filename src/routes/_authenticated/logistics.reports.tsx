@@ -98,6 +98,14 @@ function ReportsPage() {
           >
             <Download className="mr-2 size-4" /> Export summary
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => exportAssignmentsCsv(assignments.data ?? [])}
+            disabled={!(assignments.data ?? []).length}
+          >
+            <Download className="mr-2 size-4" /> Export allocations
+          </Button>
           <Button size="sm" variant="outline" onClick={() => window.print()}>
             <Printer className="mr-2 size-4" /> Print
           </Button>

@@ -303,6 +303,7 @@ export async function createAssignment(input: {
 }) {
   const { error } = await supabase.from("transport_assignments").insert(input);
   if (error) throw new Error(error.message);
+  await addApproval({ requestId: input.transport_request_id, action: "assigned", comment: input.notes ?? null });
   await Promise.all([
     updateRequestStatus(input.transport_request_id, { status: "assigned" }),
     supabase.from("vehicles").update({ current_status: "assigned" }).eq("id", input.vehicle_id),
