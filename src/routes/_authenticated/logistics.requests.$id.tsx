@@ -14,7 +14,10 @@ import { DataState, EmptyState } from "@/components/DataState";
 import { RequestDetailCards } from "@/components/RequestDetailCards";
 import { useAuth } from "@/hooks/useAuth";
 import {
+  addApproval,
+  approveRequest,
   createAssignment,
+  rejectRequest,
   fetchDrivers,
   fetchRequest,
   fetchRequestDays,
@@ -47,6 +50,9 @@ function ReviewRequest() {
   const drivers = useQuery({ queryKey: qk.drivers, queryFn: fetchDrivers });
 
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [signature, setSignature] = useState("");
+  const [approveNote, setApproveNote] = useState("");
   const [reason, setReason] = useState("");
   const [assignOpen, setAssignOpen] = useState(false);
   const [vehicleId, setVehicleId] = useState("");
@@ -58,9 +64,31 @@ function ReviewRequest() {
   const data = request.data;
 
   const setStatus = useMutation({
-    mutationFn: (patch: Parameters<typeof updateRequestStatus>[1]) => updateRequestStatus(id, patch),
+    mutationFn: async (patch: Parameters<typeof updateRequestStatus>[1]) => {
+      await updateRequestStatus(id, patch);
+      if (patch.status) await addApproval({ requestId: id, action: patch.status });
+    },
     onSuccess: () => {
       toast.success("Request updated");
+      void queryClient.invalidateQueries();
+    },
+    onError: (e) => toast.error(friendlyError(e)),
+  });
+
+  const approve = useMutation({
+    mutationFn: () => approveRequest(id, signature, approveNote),
+    onSuccess: () => {
+      toast.success("Request approved and signed");
+      setApproveOpen(false);
+      void queryClient.invalidateQueries();
+    },
+    onError: (e) => toast.error(friendlyError(e)),
+  });
+
+  const reject = useMutation({
+    mutationFn: () => rejectRequest(id, signature, reason),
+    onSuccess: () => {
+      toast.success("Request rejected");
       setRejectOpen(false);
       void queryClient.invalidateQueries();
     },
@@ -121,12 +149,21 @@ function ReviewRequest() {
             <>
               <Button
                 size="sm"
-                onClick={() => setStatus.mutate({ status: "approved", reviewed_at: new Date().toISOString() })}
-                disabled={setStatus.isPending}
+                onClick={() => {
+                  setSignature(profile?.full_name ?? "");
+                  setApproveOpen(true);
+                }}
               >
                 <Check className="mr-2 size-4" /> Approve
               </Button>
-              <Button size="sm" variant="destructive" onClick={() => setRejectOpen(true)}>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => {
+                  setSignature(profile?.full_name ?? "");
+                  setRejectOpen(true);
+                }}
+              >
                 <X className="mr-2 size-4" /> Reject
               </Button>
             </>
@@ -158,14 +195,49 @@ function ReviewRequest() {
         {data ? <RequestDetailCards request={data} days={days.data ?? []} /> : null}
       </DataState>
 
+      <Dialog open={approveOpen} onOpenChange={setApproveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve and sign</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="asig">Signature (type your full name)</Label>
+              <Input id="asig" value={signature} onChange={(e) => setSignature(e.target.value)} />
+              <p className="text-xs text-muted-foreground">
+                Recorded with your name, role and a timestamp, and printed on the request form.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="anote">Approval note (optional)</Label>
+              <Textarea id="anote" value={approveNote} onChange={(e) => setApproveNote(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setApproveOpen(false)}>
+              Cancel
+            </Button>
+            <Button disabled={!signature.trim() || approve.isPending} onClick={() => approve.mutate()}>
+              Approve request
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Reject request</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="reason">Reason for rejection</Label>
-            <Textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="reason">Reason for rejection</Label>
+              <Textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="rsig">Signature (type your full name)</Label>
+              <Input id="rsig" value={signature} onChange={(e) => setSignature(e.target.value)} />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRejectOpen(false)}>
@@ -173,14 +245,8 @@ function ReviewRequest() {
             </Button>
             <Button
               variant="destructive"
-              disabled={!reason.trim() || setStatus.isPending}
-              onClick={() =>
-                setStatus.mutate({
-                  status: "rejected",
-                  rejection_reason: reason.trim(),
-                  reviewed_at: new Date().toISOString(),
-                })
-              }
+              disabled={!reason.trim() || !signature.trim() || reject.isPending}
+              onClick={() => reject.mutate()}
             >
               Reject request
             </Button>
