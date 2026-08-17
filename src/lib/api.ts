@@ -599,7 +599,7 @@ export async function fetchApprovals(requestId: string): Promise<ApprovalRecord[
 }
 
 /** Approve with a typed signature so the paper form's sign-off box is reproducible. */
-export async function approveRequest(id: string, signature: string, comment?: string) {
+export async function approveRequest(id: string, signature: string, comment?: string | null) {
   const who = await actorIdentity();
   const { error } = await supabase
     .from("transport_requests")
