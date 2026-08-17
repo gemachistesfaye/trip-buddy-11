@@ -10,6 +10,7 @@ import type {
   RequestDay,
   TransportRequest,
   Vehicle,
+  ApprovalRecord,
 } from "@/lib/domain";
 import { parseSettings, type NoticeSettings } from "@/lib/rules";
 
@@ -31,6 +32,7 @@ export const qk = {
   notifications: (userId: string) => ["notifications", userId] as const,
   profiles: ["profiles"] as const,
   roles: ["roles"] as const,
+  approvals: (id: string) => ["approvals", id] as const,
 };
 
 const REQUEST_SELECT =
@@ -152,6 +154,8 @@ export interface DailyRequestInput {
   purpose: string;
   goods_carried?: string;
   remarks?: string;
+  requester_signature?: string;
+  short_notice_reason?: string;
 }
 
 export async function createDailyRequest(input: DailyRequestInput) {
@@ -172,12 +176,16 @@ export async function createDailyRequest(input: DailyRequestInput) {
       purpose: input.purpose,
       goods_carried: input.goods_carried ?? null,
       remarks: input.remarks ?? null,
+      requester_signature: input.requester_signature?.trim() || null,
+      requester_signed_at: new Date().toISOString(),
+      short_notice_reason: input.short_notice_reason?.trim() || null,
       status: "submitted",
       submitted_at: new Date().toISOString(),
     })
     .select("id")
     .single();
   if (error) throw new Error(error.message);
+  await recordSubmission(data.id, input.requester_signature, input.short_notice_reason);
   return data;
 }
 
@@ -185,10 +193,15 @@ export interface WeeklyDayInput {
   trip_date: string;
   morning_requested: boolean;
   afternoon_requested: boolean;
-  departure_time: string;
-  return_time: string;
+  /** Morning session detail (mirrors the paper form's AM row). */
+  morning_departure_time: string;
+  morning_return_time: string;
+  morning_passengers: number;
+  /** Afternoon session detail (mirrors the paper form's PM row). */
+  afternoon_departure_time: string;
+  afternoon_return_time: string;
+  afternoon_passengers: number;
   destination: string;
-  number_of_passengers: number;
   purpose: string;
   goods_carried?: string;
 }
@@ -197,6 +210,9 @@ export async function createWeeklyRequest(
   header: Omit<DailyRequestInput, "trip_date" | "number_of_passengers" | "destination" | "preferred_departure_time" | "estimated_return_time" | "purpose"> & {
     trip_from_date: string;
     trip_to_date: string;
+    requester_signature?: string;
+    short_notice_reason?: string;
+    goods_carried?: string;
   },
   days: WeeklyDayInput[],
 ) {
@@ -212,11 +228,15 @@ export async function createWeeklyRequest(
       trip_from_date: header.trip_from_date,
       trip_to_date: header.trip_to_date,
       destination: first?.destination ?? null,
-      number_of_passengers: first?.number_of_passengers ?? null,
-      preferred_departure_time: first?.departure_time ?? null,
-      estimated_return_time: first?.return_time ?? null,
+      number_of_passengers: first ? sessionPassengers(first) : null,
+      preferred_departure_time: first ? firstTime(first) : null,
+      estimated_return_time: first ? lastTime(first) : null,
       purpose: first?.purpose ?? null,
+      goods_carried: header.goods_carried?.trim() || null,
       remarks: header.remarks ?? null,
+      requester_signature: header.requester_signature?.trim() || null,
+      requester_signed_at: new Date().toISOString(),
+      short_notice_reason: header.short_notice_reason?.trim() || null,
       status: "submitted",
       submitted_at: new Date().toISOString(),
     })
@@ -229,10 +249,16 @@ export async function createWeeklyRequest(
     trip_date: d.trip_date,
     morning_requested: d.morning_requested,
     afternoon_requested: d.afternoon_requested,
-    departure_time: d.departure_time || null,
-    return_time: d.return_time || null,
+    morning_departure_time: d.morning_requested ? d.morning_departure_time || null : null,
+    morning_return_time: d.morning_requested ? d.morning_return_time || null : null,
+    morning_passengers: d.morning_requested ? d.morning_passengers : null,
+    afternoon_departure_time: d.afternoon_requested ? d.afternoon_departure_time || null : null,
+    afternoon_return_time: d.afternoon_requested ? d.afternoon_return_time || null : null,
+    afternoon_passengers: d.afternoon_requested ? d.afternoon_passengers : null,
+    departure_time: firstTime(d),
+    return_time: lastTime(d),
     destination: d.destination,
-    number_of_passengers: d.number_of_passengers,
+    number_of_passengers: sessionPassengers(d),
     purpose: d.purpose,
     goods_carried: d.goods_carried ?? null,
   }));
@@ -240,7 +266,22 @@ export async function createWeeklyRequest(
     const dayRes = await supabase.from("transport_request_days").insert(rows);
     if (dayRes.error) throw new Error(dayRes.error.message);
   }
+  await recordSubmission(data.id, header.requester_signature, header.short_notice_reason);
   return data;
+}
+
+/* --------------------- weekly session helper functions --------------------- */
+
+function firstTime(d: WeeklyDayInput) {
+  return (d.morning_requested ? d.morning_departure_time : d.afternoon_departure_time) || null;
+}
+
+function lastTime(d: WeeklyDayInput) {
+  return (d.afternoon_requested ? d.afternoon_return_time : d.morning_return_time) || null;
+}
+
+function sessionPassengers(d: WeeklyDayInput) {
+  return Math.max(d.morning_requested ? d.morning_passengers : 0, d.afternoon_requested ? d.afternoon_passengers : 0) || null;
 }
 
 export async function updateRequestStatus(
@@ -496,4 +537,94 @@ export async function repeatRequest(source: TransportRequest, offsetDays: number
     if (res.error) throw new Error(res.error.message);
   }
   return data;
+}
+
+
+/* --------------------------- approval evidence ----------------------------- */
+
+async function actorIdentity() {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id ?? null;
+  if (!userId) return { userId: null, profileId: null, name: "", role: "" };
+  const [{ data: prof }, { data: roleRow }] = await Promise.all([
+    supabase.from("profiles").select("id, full_name, email").eq("auth_user_id", userId).maybeSingle(),
+    supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle(),
+  ]);
+  return {
+    userId,
+    profileId: prof?.id ?? null,
+    name: prof?.full_name || prof?.email || "",
+    role: (roleRow?.role as string) ?? "",
+  };
+}
+
+export async function addApproval(input: {
+  requestId: string;
+  action: string;
+  signature?: string | null;
+  comment?: string | null;
+}) {
+  const who = await actorIdentity();
+  const { error } = await supabase.from("request_approvals").insert({
+    transport_request_id: input.requestId,
+    action: input.action,
+    actor_user_id: who.userId,
+    actor_profile_id: who.profileId,
+    actor_name: who.name,
+    actor_role: who.role,
+    signature_name: input.signature?.trim() || null,
+    comment: input.comment?.trim() || null,
+  });
+  if (error) throw new Error(error.message);
+}
+
+async function recordSubmission(requestId: string, signature?: string, shortNoticeReason?: string) {
+  await addApproval({ requestId, action: "submitted", signature: signature ?? null });
+  if (shortNoticeReason?.trim()) {
+    await addApproval({ requestId, action: "short_notice", comment: shortNoticeReason });
+  }
+}
+
+export async function fetchApprovals(requestId: string): Promise<ApprovalRecord[]> {
+  return unwrap<ApprovalRecord[]>(
+    (await supabase
+      .from("request_approvals")
+      .select("*")
+      .eq("transport_request_id", requestId)
+      .order("created_at", { ascending: true })) as unknown as {
+      data: ApprovalRecord[] | null;
+      error: { message: string } | null;
+    },
+  );
+}
+
+/** Approve with a typed signature so the paper form's sign-off box is reproducible. */
+export async function approveRequest(id: string, signature: string, comment?: string) {
+  const who = await actorIdentity();
+  const { error } = await supabase
+    .from("transport_requests")
+    .update({
+      status: "approved",
+      reviewed_at: new Date().toISOString(),
+      approved_at: new Date().toISOString(),
+      approved_by: who.profileId,
+      approver_signature: signature.trim(),
+    })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  await addApproval({ requestId: id, action: "approved", signature, comment });
+}
+
+export async function rejectRequest(id: string, signature: string, reason: string) {
+  const { error } = await supabase
+    .from("transport_requests")
+    .update({
+      status: "rejected",
+      rejection_reason: reason.trim(),
+      reviewed_at: new Date().toISOString(),
+      approver_signature: signature.trim(),
+    })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  await addApproval({ requestId: id, action: "rejected", signature, comment: reason });
 }
