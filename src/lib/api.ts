@@ -561,8 +561,8 @@ async function actorIdentity() {
 export async function addApproval(input: {
   requestId: string;
   action: string;
-  signature?: string | null;
-  comment?: string | null;
+  signature?: string | null | undefined;
+  comment?: string | null | undefined;
 }) {
   const who = await actorIdentity();
   const { error } = await supabase.from("request_approvals").insert({
