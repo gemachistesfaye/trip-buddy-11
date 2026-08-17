@@ -160,7 +160,25 @@
   background-color: var(--color-card);
 }
 
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
 @media print {
+  table,
+  th,
+  td {
+    border: 1px solid #999 !important;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+  }
+
   .no-print,
   aside,
   header,
