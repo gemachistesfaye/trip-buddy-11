@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import type { TransportRequest } from "@/lib/domain";
+import type { Assignment, Driver, TransportRequest, Vehicle } from "@/lib/domain";
 
 function escapeCell(value: unknown) {
   const text = value === null || value === undefined ? "" : String(value);
@@ -78,4 +78,63 @@ export function requestsToRows(requests: TransportRequest[]) {
 
 export function exportRequestsCsv(requests: TransportRequest[], name = "transport-requests") {
   downloadCsv(`${name}-${format(new Date(), "yyyy-MM-dd")}`, requestsToRows(requests));
+}
+
+/** Driver directory in the same shape as the handwritten contact sheet. */
+export function exportDriversCsv(drivers: Driver[], vehicles: Vehicle[] = []) {
+  const plate = (id: string | null) => vehicles.find((v) => v.id === id)?.plate_number ?? "";
+  const rows: (string | number | null)[][] = [
+    ["Driver", "Phone", "Licence", "Default vehicle", "Status", "Active", "Notes"],
+    ...drivers.map((d) => [
+      d.full_name,
+      d.phone ?? "",
+      d.license_number ?? "",
+      plate(d.assigned_vehicle_id),
+      d.status,
+      d.is_active ? "Yes" : "No",
+      d.notes ?? "",
+    ]),
+  ];
+  downloadCsv(`driver-directory-${format(new Date(), "yyyy-MM-dd")}`, rows);
+}
+
+/** Full allocation report: which vehicle and driver served which trip. */
+export function exportAssignmentsCsv(assignments: Assignment[], name = "vehicle-allocations") {
+  const rows: (string | number | null)[][] = [
+    [
+      "Request No",
+      "Department",
+      "Destination",
+      "Plate number",
+      "Vehicle type",
+      "Driver",
+      "Driver contact",
+      "Planned departure",
+      "Planned return",
+      "Actual departure",
+      "Actual return",
+      "Odometer start",
+      "Odometer end",
+      "Distance (km)",
+      "Status",
+    ],
+    ...assignments.map((a) => [
+      a.transport_requests?.request_number ?? "",
+      a.transport_requests?.departments?.name ?? "",
+      a.transport_requests?.destination ?? "",
+      a.vehicles?.plate_number ?? "",
+      a.vehicles?.vehicle_type ?? "",
+      a.drivers?.full_name ?? "",
+      a.drivers?.phone ?? "",
+      a.departure_datetime,
+      a.expected_return_datetime,
+      a.actual_departure_datetime ?? "",
+      a.actual_return_datetime ?? "",
+      a.odometer_start ?? "",
+      a.odometer_end ?? "",
+      a.odometer_start != null && a.odometer_end != null ? a.odometer_end - a.odometer_start : "",
+      a.status,
+    ]),
+  ];
+  downloadCsv(`${name}-${format(new Date(), "yyyy-MM-dd")}`, rows);
 }

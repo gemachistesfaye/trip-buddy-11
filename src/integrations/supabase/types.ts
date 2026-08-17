@@ -215,6 +215,60 @@ export type Database = {
           },
         ]
       }
+      request_approvals: {
+        Row: {
+          action: string
+          actor_name: string
+          actor_profile_id: string | null
+          actor_role: string
+          actor_user_id: string | null
+          comment: string | null
+          created_at: string
+          id: string
+          signature_name: string | null
+          transport_request_id: string
+        }
+        Insert: {
+          action: string
+          actor_name?: string
+          actor_profile_id?: string | null
+          actor_role?: string
+          actor_user_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          signature_name?: string | null
+          transport_request_id: string
+        }
+        Update: {
+          action?: string
+          actor_name?: string
+          actor_profile_id?: string | null
+          actor_role?: string
+          actor_user_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          signature_name?: string | null
+          transport_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_approvals_actor_profile_id_fkey"
+            columns: ["actor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_approvals_transport_request_id_fkey"
+            columns: ["transport_request_id"]
+            isOneToOne: false
+            referencedRelation: "transport_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_settings: {
         Row: {
           description: string | null
@@ -324,13 +378,19 @@ export type Database = {
       }
       transport_request_days: {
         Row: {
+          afternoon_departure_time: string | null
+          afternoon_passengers: number | null
           afternoon_requested: boolean
+          afternoon_return_time: string | null
           created_at: string
           departure_time: string | null
           destination: string | null
           goods_carried: string | null
           id: string
+          morning_departure_time: string | null
+          morning_passengers: number | null
           morning_requested: boolean
+          morning_return_time: string | null
           number_of_passengers: number | null
           purpose: string | null
           return_time: string | null
@@ -338,13 +398,19 @@ export type Database = {
           trip_date: string
         }
         Insert: {
+          afternoon_departure_time?: string | null
+          afternoon_passengers?: number | null
           afternoon_requested?: boolean
+          afternoon_return_time?: string | null
           created_at?: string
           departure_time?: string | null
           destination?: string | null
           goods_carried?: string | null
           id?: string
+          morning_departure_time?: string | null
+          morning_passengers?: number | null
           morning_requested?: boolean
+          morning_return_time?: string | null
           number_of_passengers?: number | null
           purpose?: string | null
           return_time?: string | null
@@ -352,13 +418,19 @@ export type Database = {
           trip_date: string
         }
         Update: {
+          afternoon_departure_time?: string | null
+          afternoon_passengers?: number | null
           afternoon_requested?: boolean
+          afternoon_return_time?: string | null
           created_at?: string
           departure_time?: string | null
           destination?: string | null
           goods_carried?: string | null
           id?: string
+          morning_departure_time?: string | null
+          morning_passengers?: number | null
           morning_requested?: boolean
+          morning_return_time?: string | null
           number_of_passengers?: number | null
           purpose?: string | null
           return_time?: string | null
@@ -377,6 +449,9 @@ export type Database = {
       }
       transport_requests: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approver_signature: string | null
           completed_at: string | null
           contact_number: string | null
           created_at: string
@@ -384,6 +459,7 @@ export type Database = {
           estimated_return_time: string | null
           goods_carried: string | null
           id: string
+          is_short_notice: boolean
           number_of_passengers: number | null
           preferred_departure_time: string | null
           purpose: string | null
@@ -393,8 +469,11 @@ export type Database = {
           request_number: string
           request_type: Database["public"]["Enums"]["request_type"]
           requester_id: string | null
+          requester_signature: string | null
+          requester_signed_at: string | null
           requesting_department_id: string
           reviewed_at: string | null
+          short_notice_reason: string | null
           status: Database["public"]["Enums"]["request_status"]
           submitted_at: string | null
           trip_from_date: string | null
@@ -402,6 +481,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approver_signature?: string | null
           completed_at?: string | null
           contact_number?: string | null
           created_at?: string
@@ -409,6 +491,7 @@ export type Database = {
           estimated_return_time?: string | null
           goods_carried?: string | null
           id?: string
+          is_short_notice?: boolean
           number_of_passengers?: number | null
           preferred_departure_time?: string | null
           purpose?: string | null
@@ -418,8 +501,11 @@ export type Database = {
           request_number?: string
           request_type: Database["public"]["Enums"]["request_type"]
           requester_id?: string | null
+          requester_signature?: string | null
+          requester_signed_at?: string | null
           requesting_department_id: string
           reviewed_at?: string | null
+          short_notice_reason?: string | null
           status?: Database["public"]["Enums"]["request_status"]
           submitted_at?: string | null
           trip_from_date?: string | null
@@ -427,6 +513,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approver_signature?: string | null
           completed_at?: string | null
           contact_number?: string | null
           created_at?: string
@@ -434,6 +523,7 @@ export type Database = {
           estimated_return_time?: string | null
           goods_carried?: string | null
           id?: string
+          is_short_notice?: boolean
           number_of_passengers?: number | null
           preferred_departure_time?: string | null
           purpose?: string | null
@@ -443,8 +533,11 @@ export type Database = {
           request_number?: string
           request_type?: Database["public"]["Enums"]["request_type"]
           requester_id?: string | null
+          requester_signature?: string | null
+          requester_signed_at?: string | null
           requesting_department_id?: string
           reviewed_at?: string | null
+          short_notice_reason?: string | null
           status?: Database["public"]["Enums"]["request_status"]
           submitted_at?: string | null
           trip_from_date?: string | null
@@ -452,6 +545,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transport_requests_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transport_requests_requester_id_fkey"
             columns: ["requester_id"]

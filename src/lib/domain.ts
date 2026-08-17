@@ -102,6 +102,13 @@ export interface TransportRequest {
   reviewed_at: string | null;
   completed_at: string | null;
   created_at: string;
+  requester_signature: string | null;
+  requester_signed_at: string | null;
+  approver_signature: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  is_short_notice: boolean;
+  short_notice_reason: string | null;
   departments?: Pick<Department, "id" | "name" | "code"> | null;
   profiles?: Pick<Profile, "id" | "full_name" | "email" | "phone"> | null;
   transport_assignments?: Assignment[];
@@ -120,7 +127,38 @@ export interface RequestDay {
   number_of_passengers: number | null;
   purpose: string | null;
   goods_carried: string | null;
+  morning_departure_time: string | null;
+  morning_return_time: string | null;
+  morning_passengers: number | null;
+  afternoon_departure_time: string | null;
+  afternoon_return_time: string | null;
+  afternoon_passengers: number | null;
 }
+
+/** Signed approval / attestation evidence attached to a request. */
+export interface ApprovalRecord {
+  id: string;
+  transport_request_id: string;
+  action: string;
+  actor_user_id: string | null;
+  actor_profile_id: string | null;
+  actor_name: string;
+  actor_role: string;
+  signature_name: string | null;
+  comment: string | null;
+  created_at: string;
+}
+
+export const APPROVAL_ACTION_LABELS: Record<string, string> = {
+  submitted: "Submitted & signed by requester",
+  under_review: "Taken under review",
+  approved: "Approved by Logistics",
+  rejected: "Rejected by Logistics",
+  assigned: "Vehicle & driver allocated",
+  completed: "Trip closed",
+  cancelled: "Cancelled",
+  short_notice: "Short-notice exception claimed",
+};
 
 export interface Assignment {
   id: string;

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addDays, format } from "date-fns";
+import { addDays, format, nextMonday, startOfWeek } from "date-fns";
 import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -31,6 +31,30 @@ export const Route = createFileRoute("/_authenticated/department/new-request")({
 
 const today = () => format(new Date(), "yyyy-MM-dd");
 
+/** The paper weekly form runs Monday to Saturday. */
+function weekDays(startISO: string): WeeklyDayInput[] {
+  const start = new Date(`${startISO}T00:00:00`);
+  return Array.from({ length: 6 }).map((_, i) => ({
+    trip_date: format(addDays(start, i), "yyyy-MM-dd"),
+    morning_requested: false,
+    afternoon_requested: false,
+    morning_departure_time: "08:00",
+    morning_return_time: "12:00",
+    morning_passengers: 1,
+    afternoon_departure_time: "13:00",
+    afternoon_return_time: "17:00",
+    afternoon_passengers: 1,
+    destination: "",
+    purpose: "",
+    goods_carried: "",
+  }));
+}
+
+function defaultWeekStart() {
+  const upcoming = nextMonday(addDays(new Date(), 2));
+  return format(startOfWeek(upcoming, { weekStartsOn: 1 }), "yyyy-MM-dd");
+}
+
 function NewRequest() {
   const { profile } = useAuth();
   const navigate = useNavigate();
@@ -40,6 +64,8 @@ function NewRequest() {
 
   const [tab, setTab] = useState("daily");
   const [contact, setContact] = useState(profile?.phone ?? "");
+  const [signature, setSignature] = useState(profile?.full_name ?? "");
+  const [shortNoticeReason, setShortNoticeReason] = useState("");
 
   /* daily state */
   const [tripDate, setTripDate] = useState(format(addDays(new Date(), 2), "yyyy-MM-dd"));
@@ -52,22 +78,13 @@ function NewRequest() {
   const [remarks, setRemarks] = useState("");
 
   /* weekly state */
-  const [fromDate, setFromDate] = useState(format(addDays(new Date(), 5), "yyyy-MM-dd"));
-  const [days, setDays] = useState<WeeklyDayInput[]>(() =>
-    Array.from({ length: 5 }).map((_, i) => ({
-      trip_date: format(addDays(new Date(), 5 + i), "yyyy-MM-dd"),
-      morning_requested: i === 0,
-      afternoon_requested: false,
-      departure_time: "08:00",
-      return_time: "17:00",
-      destination: "",
-      number_of_passengers: 1,
-      purpose: "",
-    })),
-  );
+  const [fromDate, setFromDate] = useState(defaultWeekStart);
+  const [days, setDays] = useState<WeeklyDayInput[]>(() => weekDays(defaultWeekStart()));
+  const [weeklyGoods, setWeeklyGoods] = useState("");
 
   const dailyNotice = useMemo(() => checkDailyNotice(tripDate, departure, rules), [tripDate, departure, rules]);
   const weeklyNotice = useMemo(() => checkWeeklyNotice(fromDate, rules), [fromDate, rules]);
+  const activeNotice = tab === "daily" ? dailyNotice : weeklyNotice;
 
   const submitDaily = useMutation({
     mutationFn: () =>
@@ -84,6 +101,8 @@ function NewRequest() {
         purpose,
         goods_carried: goods,
         remarks,
+        requester_signature: signature,
+        short_notice_reason: dailyNotice.ok ? "" : shortNoticeReason,
       }),
     onSuccess: () => {
       toast.success("Transport request submitted");
@@ -106,6 +125,9 @@ function NewRequest() {
           trip_from_date: sorted[0]?.trip_date ?? fromDate,
           trip_to_date: sorted[sorted.length - 1]?.trip_date ?? fromDate,
           remarks,
+          goods_carried: weeklyGoods,
+          requester_signature: signature,
+          short_notice_reason: weeklyNotice.ok ? "" : shortNoticeReason,
         },
         sorted,
       );
@@ -123,13 +145,54 @@ function NewRequest() {
   }
 
   function shiftWeek(start: string) {
-    setFromDate(start);
+    if (!start) return;
+    const monday = format(startOfWeek(new Date(`${start}T00:00:00`), { weekStartsOn: 1 }), "yyyy-MM-dd");
+    setFromDate(monday);
     setDays((prev) =>
-      prev.map((d, i) => ({ ...d, trip_date: format(addDays(new Date(`${start}T00:00:00`), i), "yyyy-MM-dd") })),
+      weekDays(monday).map((fresh, i) => ({
+        ...fresh,
+        morning_requested: prev[i]?.morning_requested ?? false,
+        afternoon_requested: prev[i]?.afternoon_requested ?? false,
+        morning_departure_time: prev[i]?.morning_departure_time ?? fresh.morning_departure_time,
+        morning_return_time: prev[i]?.morning_return_time ?? fresh.morning_return_time,
+        morning_passengers: prev[i]?.morning_passengers ?? fresh.morning_passengers,
+        afternoon_departure_time: prev[i]?.afternoon_departure_time ?? fresh.afternoon_departure_time,
+        afternoon_return_time: prev[i]?.afternoon_return_time ?? fresh.afternoon_return_time,
+        afternoon_passengers: prev[i]?.afternoon_passengers ?? fresh.afternoon_passengers,
+        destination: prev[i]?.destination ?? "",
+        purpose: prev[i]?.purpose ?? "",
+        goods_carried: prev[i]?.goods_carried ?? "",
+      })),
     );
   }
 
   const noProfile = !profile?.department_id || !profile?.id;
+  const needsJustification = !activeNotice.ok && !shortNoticeReason.trim();
+
+  const shortNoticeBlock = !activeNotice.ok ? (
+    <Alert>
+      <AlertTriangle className="size-4" />
+      <AlertTitle>Short notice — justification required</AlertTitle>
+      <AlertDescription className="space-y-2">
+        <p>{activeNotice.message}</p>
+        <Textarea
+          value={shortNoticeReason}
+          onChange={(e) => setShortNoticeReason(e.target.value)}
+          placeholder="Explain why this trip cannot meet the standard notice period. Logistics is notified and this reason is stored on the request."
+        />
+      </AlertDescription>
+    </Alert>
+  ) : null;
+
+  const signatureBlock = (
+    <div className="space-y-2">
+      <Label htmlFor="sig">Requester signature (type your full name)</Label>
+      <Input id="sig" value={signature} onChange={(e) => setSignature(e.target.value)} required />
+      <p className="text-xs text-muted-foreground">
+        Typing your name signs this request and is recorded with a timestamp as approval evidence.
+      </p>
+    </div>
+  );
 
   return (
     <AppShell area="department" title="New Transport Request" description="Daily trip or a recurring weekly plan">
@@ -143,7 +206,7 @@ function NewRequest() {
         </Alert>
       ) : null}
 
-      <Tabs value={tab} onValueChange={setTab} className="max-w-4xl">
+      <Tabs value={tab} onValueChange={setTab} className="max-w-5xl">
         <TabsList>
           <TabsTrigger value="daily">Daily request</TabsTrigger>
           <TabsTrigger value="weekly">Weekly request</TabsTrigger>
@@ -159,6 +222,10 @@ function NewRequest() {
                 className="space-y-4"
                 onSubmit={(e) => {
                   e.preventDefault();
+                  if (needsJustification) {
+                    toast.error("Add a short-notice justification before submitting.");
+                    return;
+                  }
                   submitDaily.mutate();
                 }}
               >
@@ -216,16 +283,11 @@ function NewRequest() {
                   </div>
                 </div>
 
-                {!dailyNotice.ok ? (
-                  <Alert>
-                    <AlertTriangle className="size-4" />
-                    <AlertTitle>Short notice</AlertTitle>
-                    <AlertDescription>{dailyNotice.message}</AlertDescription>
-                  </Alert>
-                ) : null}
+                {signatureBlock}
+                {shortNoticeBlock}
 
                 <Button type="submit" disabled={submitDaily.isPending || noProfile}>
-                  {submitDaily.isPending ? "Submitting…" : "Submit request"}
+                  {submitDaily.isPending ? "Submitting…" : "Sign & submit request"}
                 </Button>
               </form>
             </CardContent>
@@ -235,7 +297,7 @@ function NewRequest() {
         <TabsContent value="weekly" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>Weekly transport request</CardTitle>
+              <CardTitle>Weekly transport request (Monday – Saturday)</CardTitle>
             </CardHeader>
             <CardContent>
               <form
@@ -244,11 +306,15 @@ function NewRequest() {
                   e.preventDefault();
                   const selected = days.filter((d) => d.morning_requested || d.afternoon_requested);
                   if (selected.length === 0) {
-                    toast.error("Select at least one day (morning or afternoon).");
+                    toast.error("Select at least one session (morning or afternoon).");
                     return;
                   }
                   if (selected.some((d) => !d.destination.trim() || !d.purpose.trim())) {
                     toast.error("Each selected day needs a destination and purpose.");
+                    return;
+                  }
+                  if (needsJustification) {
+                    toast.error("Add a short-notice justification before submitting.");
                     return;
                   }
                   submitWeekly.mutate();
@@ -260,86 +326,135 @@ function NewRequest() {
                     <Input id="wcontact" value={contact} onChange={(e) => setContact(e.target.value)} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="wstart">Week starting</Label>
+                    <Label htmlFor="wstart">Week starting (Monday)</Label>
                     <Input id="wstart" type="date" value={fromDate} onChange={(e) => shiftWeek(e.target.value)} required />
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  {days.map((d, i) => {
-                    const active = d.morning_requested || d.afternoon_requested;
-                    return (
-                      <div key={d.trip_date + i} className="rounded-lg border bg-card p-3">
-                        <div className="flex flex-wrap items-center gap-4">
-                          <p className="min-w-32 text-sm font-medium">{format(new Date(`${d.trip_date}T00:00:00`), "EEE dd MMM")}</p>
-                          <label className="flex items-center gap-2 text-sm">
-                            <Checkbox
-                              checked={d.morning_requested}
-                              onCheckedChange={(v) => updateDay(i, { morning_requested: v === true })}
-                            />
-                            Morning
-                          </label>
-                          <label className="flex items-center gap-2 text-sm">
-                            <Checkbox
-                              checked={d.afternoon_requested}
-                              onCheckedChange={(v) => updateDay(i, { afternoon_requested: v === true })}
-                            />
-                            Afternoon
-                          </label>
-                        </div>
-                        {active ? (
-                          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {days.map((d, i) => (
+                    <div key={d.trip_date} className="rounded-lg border bg-card p-3">
+                      <div className="flex flex-wrap items-center gap-4">
+                        <p className="min-w-32 text-sm font-medium">
+                          {format(new Date(`${d.trip_date}T00:00:00`), "EEEE dd MMM")}
+                        </p>
+                        <label className="flex items-center gap-2 text-sm">
+                          <Checkbox
+                            checked={d.morning_requested}
+                            onCheckedChange={(v) => updateDay(i, { morning_requested: v === true })}
+                          />
+                          Morning
+                        </label>
+                        <label className="flex items-center gap-2 text-sm">
+                          <Checkbox
+                            checked={d.afternoon_requested}
+                            onCheckedChange={(v) => updateDay(i, { afternoon_requested: v === true })}
+                          />
+                          Afternoon
+                        </label>
+                      </div>
+
+                      {d.morning_requested ? (
+                        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                          <div className="space-y-1">
+                            <Label className="text-xs uppercase text-muted-foreground">Morning departure</Label>
                             <Input
-                              placeholder="Destination"
-                              value={d.destination}
-                              onChange={(e) => updateDay(i, { destination: e.target.value })}
+                              type="time"
+                              value={d.morning_departure_time}
+                              onChange={(e) => updateDay(i, { morning_departure_time: e.target.value })}
                             />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs uppercase text-muted-foreground">Morning return</Label>
                             <Input
-                              placeholder="Purpose"
-                              value={d.purpose}
-                              onChange={(e) => updateDay(i, { purpose: e.target.value })}
+                              type="time"
+                              value={d.morning_return_time}
+                              onChange={(e) => updateDay(i, { morning_return_time: e.target.value })}
                             />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs uppercase text-muted-foreground">Morning passengers</Label>
                             <Input
                               type="number"
                               min={1}
                               max={rules.maxPassengerCapacity}
-                              value={d.number_of_passengers}
-                              onChange={(e) => updateDay(i, { number_of_passengers: Number(e.target.value) })}
+                              value={d.morning_passengers}
+                              onChange={(e) => updateDay(i, { morning_passengers: Number(e.target.value) })}
                             />
-                            <div className="flex gap-2">
-                              <Input
-                                type="time"
-                                value={d.departure_time}
-                                onChange={(e) => updateDay(i, { departure_time: e.target.value })}
-                              />
-                              <Input
-                                type="time"
-                                value={d.return_time}
-                                onChange={(e) => updateDay(i, { return_time: e.target.value })}
-                              />
-                            </div>
                           </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
+                        </div>
+                      ) : null}
+
+                      {d.afternoon_requested ? (
+                        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                          <div className="space-y-1">
+                            <Label className="text-xs uppercase text-muted-foreground">Afternoon departure</Label>
+                            <Input
+                              type="time"
+                              value={d.afternoon_departure_time}
+                              onChange={(e) => updateDay(i, { afternoon_departure_time: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs uppercase text-muted-foreground">Afternoon return</Label>
+                            <Input
+                              type="time"
+                              value={d.afternoon_return_time}
+                              onChange={(e) => updateDay(i, { afternoon_return_time: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs uppercase text-muted-foreground">Afternoon passengers</Label>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={rules.maxPassengerCapacity}
+                              value={d.afternoon_passengers}
+                              onChange={(e) => updateDay(i, { afternoon_passengers: Number(e.target.value) })}
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {d.morning_requested || d.afternoon_requested ? (
+                        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                          <Input
+                            placeholder="Destination"
+                            value={d.destination}
+                            onChange={(e) => updateDay(i, { destination: e.target.value })}
+                          />
+                          <Input
+                            placeholder="Purpose"
+                            value={d.purpose}
+                            onChange={(e) => updateDay(i, { purpose: e.target.value })}
+                          />
+                          <Input
+                            placeholder="Goods carried (optional)"
+                            value={d.goods_carried ?? ""}
+                            onChange={(e) => updateDay(i, { goods_carried: e.target.value })}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="wremarks">Remarks (optional)</Label>
-                  <Textarea id="wremarks" value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="wgoods">Goods carried for the week (optional)</Label>
+                    <Input id="wgoods" value={weeklyGoods} onChange={(e) => setWeeklyGoods(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="wremarks">Remarks (optional)</Label>
+                    <Input id="wremarks" value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+                  </div>
                 </div>
 
-                {!weeklyNotice.ok ? (
-                  <Alert>
-                    <AlertTriangle className="size-4" />
-                    <AlertTitle>Short notice</AlertTitle>
-                    <AlertDescription>{weeklyNotice.message}</AlertDescription>
-                  </Alert>
-                ) : null}
+                {signatureBlock}
+                {shortNoticeBlock}
 
                 <Button type="submit" disabled={submitWeekly.isPending || noProfile}>
-                  {submitWeekly.isPending ? "Submitting…" : "Submit weekly request"}
+                  {submitWeekly.isPending ? "Submitting…" : "Sign & submit weekly request"}
                 </Button>
               </form>
             </CardContent>
